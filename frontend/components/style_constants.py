@@ -1,0 +1,34 @@
+FONT_FAMILY = "Segoe UI"
+
+COLOR_TEXT_PRIMARY = "#1F2937"
+COLOR_TEXT_MUTED = "#869DA7"
+COLOR_ACCENT_BLUE = "#0062D1"
+COLOR_ACCENT_BLUE_BG = "#B8D4FF"
+COLOR_ACCENT_GREEN = "#14BD55"
+COLOR_ACCENT_GREEN_BG = "#BEF8D5"
+COLOR_ACCENT_GREEN_BORDER = "#18E767"
+COLOR_CARD_BG = "#FFFFFF"
+COLOR_PANEL_BG = "#E6F1FF"
+COLOR_BORDER = "#D8DBDE"
+
+
+def label_style(size=13, weight=400, color=COLOR_TEXT_MUTED, transparent=False):
+    bg = "background: transparent;" if transparent else ""
+    return f"""
+        font-family: '{FONT_FAMILY}';
+        font-size: {size}px;
+        font-weight: {weight};
+        color: {color};
+        {bg}
+    """
+
+
+def add_shadow(widget, blur=20, x_offset=0, y_offset=4, color=(31, 41, 55, 35)):
+    from PyQt5.QtWidgets import QGraphicsDropShadowEffect
+    from PyQt5.QtGui import QColor
+    shadow = QGraphicsDropShadowEffect(widget)
+    shadow.setBlurRadius(blur)
+    shadow.setXOffset(x_offset)
+    shadow.setYOffset(y_offset)
+    shadow.setColor(QColor(*color))
+    widget.setGraphicsEffect(shadow)
