@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QWidget,
     QLabel,
+    QPushButton,
     QHBoxLayout,
     QVBoxLayout,
 )
@@ -26,9 +27,11 @@ class Widget5(QFrame):
 
     def initUI(self):
         main_layout = QHBoxLayout()
+        main_layout.setContentsMargins(0,0,0,0)
         container = QWidget()
         container.setObjectName("container")
         container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(0,0,0,0)
 
         banner = Banner(
             "resources/chama.svg",
@@ -53,7 +56,6 @@ class Widget5(QFrame):
         header_1 = QLabel("Available Chamas")
         header_1.setObjectName("header_1")
 
-        # --- table_1: checkbox + name + members + status badge -----------
         table_1 = CustomTable([
             {"header": "", "type": "checkbox", "key": "selected", "width": 40},
             {"header": "Chama Name", "type": "text", "key": "name"},
@@ -126,11 +128,6 @@ class Widget5(QFrame):
 
     def setStylesheet(self):
         self.setStyleSheet(f"""
-            QWidget#container {{
-                border: 1px solid {COLOR_BORDER};
-                border-radius: 12px;
-                background-color: #FFFFFF;
-            }}
             QLabel#header_1, #header_2{{
                 font-family: "Segoe UI";
                 font-size: 15px;

@@ -44,6 +44,7 @@ class AddEmployee(QFrame):
         tab_1.employee_info.next_button.clicked.connect(self.employeeInformation)
         tab_2.previous_btn.clicked.connect(self.rolesPermissions)
         tab_2.next_btn.clicked.connect(self.chamaAssignments)
+        tab_3.previous_btn.clicked.connect(self.employeeInformation)
 
         self.stack.addWidget(tab_1)
         self.stack.addWidget(tab_2)

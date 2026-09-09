@@ -28,6 +28,7 @@
     <Compile Include="components\container_2.py" />
     <Compile Include="components\container_3.py" />
     <Compile Include="components\description.py" />
+    <Compile Include="components\divider.py" />
     <Compile Include="components\file_upload.py" />
     <Compile Include="components\form_dropdown.py" />
     <Compile Include="components\form_input.py" />
@@ -54,6 +55,14 @@
     <Compile Include="components\checkbox.py" />
     <Compile Include="widgets\widget_5.py" />
     <Compile Include="widgets\__init__.py" />
+    <Compile Include="windows\assignments.py" />
+    <Compile Include="windows\audit_logs.py" />
+    <Compile Include="windows\chamas.py" />
+    <Compile Include="windows\dashboard.py" />
+    <Compile Include="windows\employees.py" />
+    <Compile Include="windows\main_window.py" />
+    <Compile Include="windows\onboarding.py" />
+    <Compile Include="windows\reports.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="components\" />

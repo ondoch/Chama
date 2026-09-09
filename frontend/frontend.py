@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
     QVBoxLayout)
-from widgets.employee_widget import AddEmployee
+from windows.main_window import MainWindow
 
 class FrontEnd(QMainWindow):
     def __init__(self):
@@ -14,8 +14,9 @@ class FrontEnd(QMainWindow):
     def trialUI(self):
         central_widget = QWidget()
         main_layout = QVBoxLayout(central_widget)
+        main_layout.setContentsMargins(0,0,0,0)
 
-        widget1 = AddEmployee()
+        widget1 = MainWindow()
         main_layout.addWidget(widget1)
 
         self.setCentralWidget(central_widget)

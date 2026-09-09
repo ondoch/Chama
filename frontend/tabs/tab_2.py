@@ -97,8 +97,6 @@ class Tab2(QFrame):
                 border-radius: 8px;
                 background: #FFFFFF;
                 color: #111827;
-                font-size: 13px;
-                font-weight: 600;
             }}
             QPushButton:hover {{
                 background: #F9FAFB;
