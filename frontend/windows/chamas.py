@@ -1,9 +1,8 @@
 from PyQt5.QtWidgets import (
     QWidget,
-    QLabel,
     QHBoxLayout
 )
-
+from widgets.chama_widget import AddChama
 class ChamasWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -11,7 +10,5 @@ class ChamasWindow(QWidget):
 
     def initUI(self):
         layout = QHBoxLayout(self)
-
-        widget = QLabel("Chamas")
-
+        widget = AddChama()
         layout.addWidget(widget)

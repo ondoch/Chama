@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 
-from tabs.tab_1 import Tab1
-from tabs.tab_2 import Tab2
-from tabs.tab_3 import Tab3
+from tabs.employee.tab_1 import Tab1
+from tabs.employee.tab_2 import Tab2
+from tabs.employee.tab_3 import Tab3
 
 
 class AddEmployee(QFrame):
@@ -17,9 +17,6 @@ class AddEmployee(QFrame):
 
     def __init__(self):
         super().__init__()
-
-        self.current_step = 0
-        self.completed_steps = set()
 
         self.initUI()
 

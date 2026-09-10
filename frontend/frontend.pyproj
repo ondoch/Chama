@@ -32,6 +32,7 @@
     <Compile Include="components\file_upload.py" />
     <Compile Include="components\form_dropdown.py" />
     <Compile Include="components\form_input.py" />
+    <Compile Include="components\generate_form_input.py" />
     <Compile Include="components\header.py" />
     <Compile Include="components\information.py" />
     <Compile Include="components\menu_btn.py" />
@@ -43,10 +44,14 @@
     <Compile Include="components\toggle_button.py" />
     <Compile Include="components\__init__.py" />
     <Compile Include="frontend.py" />
-    <Compile Include="tabs\tab_1.py" />
-    <Compile Include="tabs\tab_2.py" />
-    <Compile Include="tabs\tab_3.py" />
+    <Compile Include="tabs\chama\tab_1.py" />
+    <Compile Include="tabs\chama\__init__.py" />
+    <Compile Include="tabs\employee\tab_1.py" />
+    <Compile Include="tabs\employee\tab_2.py" />
+    <Compile Include="tabs\employee\tab_3.py" />
+    <Compile Include="tabs\employee\__init__.py" />
     <Compile Include="tabs\__init__.py" />
+    <Compile Include="widgets\chama_widget.py" />
     <Compile Include="widgets\employee_widget.py" />
     <Compile Include="widgets\widget_1.py" />
     <Compile Include="widgets\widget_2.py" />
@@ -68,6 +73,8 @@
     <Folder Include="components\" />
     <Folder Include="tabs\" />
     <Folder Include="resources\" />
+    <Folder Include="tabs\employee\" />
+    <Folder Include="tabs\chama\" />
     <Folder Include="windows\" />
     <Folder Include="widgets\" />
   </ItemGroup>

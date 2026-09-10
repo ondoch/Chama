@@ -13,7 +13,7 @@ from components.form_input import FormInput
 from components.banner import Banner
 from components.toggle_button import ToggleSwitch
 from components.information import Information
-
+from components.generate_form_input import GenerateFormInput
 from components.style_constants import COLOR_ACCENT_BLUE
 
 class EmployeePersonalInfo(QFrame):
@@ -54,7 +54,7 @@ class EmployeePersonalInfo(QFrame):
 
         last_name = FormInput("resources/user.svg", "Last Name")
         phone_number = FormInput("resources/phone.svg", "Phone Number")
-        employee_id = FormInput("resources/emp.svg", "Employment Number")
+        employee_id = GenerateFormInput("resources/emp.svg", "Employment Number")
         employment_date = FormInput("resources/calender.svg", "Employment Date")
 
         column_1.addWidget(first_name)
