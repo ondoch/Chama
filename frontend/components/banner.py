@@ -27,14 +27,11 @@ class Banner(QFrame):
 
         icon = QLabel()
         pixmap = QPixmap(self.icon_path)
-        #"resources/profile.svg"
         icon.setPixmap(pixmap.scaled(47, 47, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
         title = QLabel(self.title)
-        #"Personal Information"
         title.setObjectName("title")
         sub_title = QLabel(self.sub_title)
-        #"Enter the employee basic details"
         sub_title.setObjectName("sub_title")
 
         header_label_layout.addWidget(title)
