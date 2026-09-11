@@ -23,7 +23,7 @@ class Official(QWidget):
     def initUI(self):
         main_layout = QVBoxLayout(self)
         container_widget = QWidget()
-        container_widget.setFixedWidth(400)
+        container_widget.setFixedWidth(300)
         container_widget.setObjectName("overall_container")
         container_widget_layout = QVBoxLayout(container_widget)
 
@@ -65,7 +65,7 @@ class Official(QWidget):
             }}
             QLabel#header_label{{
                 font-family: '{FONT_FAMILY}';
-                font-size: 14px;
+                font-size: 16px;
                 font-weight: 600;
                 color: {COLOR_TEXT_PRIMARY};
                 background-color: transparent;

@@ -14,12 +14,14 @@ from PyQt5.QtGui import QIcon
 
 from widgets.widget_9 import MembersTable
 from widgets.widget_10 import Official
+from widgets.widget_11 import SummaryWidget
 from components.banner import Banner
 from components.style_constants import (
     COLOR_CARD_BG, 
     COLOR_BORDER, 
     COLOR_ACCENT_BLUE
 )
+
 
 class Tab3(QFrame):
     cancel_clicked = pyqtSignal()
@@ -32,9 +34,10 @@ class Tab3(QFrame):
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
-        main_layout.setAlignment(Qt.AlignCenter)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+
         container_widget = QWidget()
-        #container_widget.setFixedWidth(800)
+        container_widget.setFixedWidth(1100)
         container_widget.setObjectName("container")
         container_widget_layout = QVBoxLayout(container_widget)
 
@@ -51,15 +54,18 @@ class Tab3(QFrame):
 
         members_table = MembersTable()
         officials = Official()
+        summary = SummaryWidget()
         row_1.addWidget(members_table)
         row_2.addWidget(officials)
+        row_3.addWidget(summary)
+        row_3.addStretch()
 
         row_container_layout.addLayout(row_1)
         row_container_layout.addLayout(row_2)
         row_container_layout.addLayout(row_3)
 
         nav_row = QHBoxLayout()
-        nav_row.setContentsMargins(10,0,10,0)
+        nav_row.setContentsMargins(10, 0, 10, 0)
 
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setIcon(QIcon("resources/cancel.svg"))
@@ -88,7 +94,9 @@ class Tab3(QFrame):
         container_widget_layout.addWidget(row_container)
         container_widget_layout.addLayout(nav_row)
 
-        main_layout.addWidget(container_widget)
+        main_layout.addStretch()
+        main_layout.addWidget(container_widget, alignment=Qt.AlignHCenter)
+        main_layout.addStretch()
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

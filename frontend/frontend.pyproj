@@ -69,6 +69,7 @@
     <Compile Include="widgets\employee_widget.py" />
     <Compile Include="widgets\widget_1.py" />
     <Compile Include="widgets\widget_10.py" />
+    <Compile Include="widgets\widget_11.py" />
     <Compile Include="widgets\widget_2.py" />
     <Compile Include="widgets\widget_3.py" />
     <Compile Include="widgets\widget_4.py" />
