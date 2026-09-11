@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import (
 
 from tabs.chama.tab_1 import Tab1
 from tabs.chama.tab_2 import Tab2
+from tabs.chama.tab_3 import Tab3
+from tabs.chama.uploads import Uploads
 
 
 class AddChama(QFrame):
@@ -20,14 +22,17 @@ class AddChama(QFrame):
         main_layout = QVBoxLayout(self)
 
         self.stack = QStackedWidget()
-        tab_1 = Tab1()
+        self.tab_1 = Tab1()
         self.tab_2 = Tab2()
+        self.tab_3 = Tab3()
 
-        tab_1.next_btn.clicked.connect(self.membersInformation)
+        self.tab_1.next_btn.clicked.connect(self.membersInformation)
         self.tab_2.back_to_tab1.connect(self.chamaInformation)
+        self.tab_2.finished.connect(self.officialsInformation)
 
-        self.stack.addWidget(tab_1)
+        self.stack.addWidget(self.tab_1)
         self.stack.addWidget(self.tab_2)
+        self.stack.addWidget(self.tab_3)
 
         main_layout.addWidget(self.stack)
 
@@ -37,5 +42,5 @@ class AddChama(QFrame):
     def membersInformation(self):
         self.stack.setCurrentIndex(1)
 
-    def officilsInformation(self):
-        pass
+    def officialsInformation(self):
+        self.stack.setCurrentIndex(2)

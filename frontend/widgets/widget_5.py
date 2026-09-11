@@ -35,7 +35,7 @@ class Widget5(QFrame):
 
         banner = Banner(
             "resources/chama.svg",
-            "Chama Assignements",
+            "Chama Assignments",
             "Assign employee to specific chamas.",
         )
 

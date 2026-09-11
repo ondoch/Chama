@@ -29,6 +29,7 @@ from widgets.widget_8 import UploadContainer
 
 class Uploads(QFrame):
     previous_clicked = pyqtSignal()
+    add_member_clicked = pyqtSignal()
     finish_clicked = pyqtSignal()
 
     def __init__(self):
@@ -67,6 +68,14 @@ class Uploads(QFrame):
         self.previous_btn.setStyleSheet(f"padding: 8px 16px; border:1px solid {COLOR_ACCENT_BLUE}; color: #000; border-radius: 6px")
         self.previous_btn.setCursor(Qt.PointingHandCursor)
 
+        self.add_btn = QPushButton("Add Member")
+        self.add_btn.setIcon(QIcon("resources/add.svg"))
+        self.add_btn.setIconSize(QSize(16, 16))
+        self.add_btn.setLayoutDirection(Qt.LeftToRight)
+        self.add_btn.setMinimumWidth(100)
+        self.add_btn.setStyleSheet(f"padding: 8px 16px; border:1px solid {COLOR_ACCENT_BLUE}; color: #000; border-radius: 6px")
+        self.add_btn.setCursor(Qt.PointingHandCursor)
+
         self.finish_btn = QPushButton("Finish")
         self.finish_btn.setIcon(QIcon("resources/tick.svg"))
         self.finish_btn.setIconSize(QSize(16, 16))
@@ -79,6 +88,8 @@ class Uploads(QFrame):
         self.finish_btn.clicked.connect(self.finish_clicked.emit)
 
         nav_row.addWidget(self.previous_btn)
+        nav_row.addStretch()
+        nav_row.addWidget(self.add_btn)
         nav_row.addStretch()
         nav_row.addWidget(self.finish_btn)
 
