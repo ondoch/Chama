@@ -23,6 +23,7 @@ from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
 from components.members_table import MembersTable
 from components.pagination import Pagination
+from components.banner_4 import Banner4
 
 class EmployeeDashboard(QFrame):
     def __init__(self):
@@ -73,6 +74,22 @@ class EmployeeDashboard(QFrame):
         top_row_layout.addStretch()
         top_row_layout.addWidget(self.add_chama_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
 
+        banner_layout = QHBoxLayout()
+        banner_layout.setSpacing(12)
+
+        left, top, right, bottom = banner_layout.getContentsMargins()
+        banner_layout.setContentsMargins(left, 10, right, bottom)
+
+        banner_1 = Banner4("resources/employees_1.svg", "24", "Employees", "+3 this month")
+        banner_2 = Banner4("resources/chamas_1.svg", "8", "Active Chamas", "+1 this month")
+        banner_3 = Banner4("resources/contributions_1.svg", "KSh 120,000", "Total Contributions", "this quarter")
+        banner_4 = Banner4("resources/pending_1.svg", "5", "Pending Approvals", "-2 since last week")
+
+        banner_layout.addWidget(banner_1, stretch=1)
+        banner_layout.addWidget(banner_2, stretch=1)
+        banner_layout.addWidget(banner_3, stretch=1)
+        banner_layout.addWidget(banner_4, stretch=1)
+
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
         search = SearchInput("Search...")
@@ -87,6 +104,7 @@ class EmployeeDashboard(QFrame):
         search_widget_layout.addWidget(status, alignment=Qt.AlignRight)
 
         container_widget_layout.addWidget(top_row_widget)
+        container_widget_layout.addLayout(banner_layout)
         container_widget_layout.addWidget(search_widget)
 
         self.table = MembersTable()

@@ -26,6 +26,7 @@
     <Compile Include="components\banner.py" />
     <Compile Include="components\banner_2.py" />
     <Compile Include="components\banner_3.py" />
+    <Compile Include="components\banner_4.py" />
     <Compile Include="components\check_statement.py" />
     <Compile Include="components\container_1.py" />
     <Compile Include="components\container_2.py" />

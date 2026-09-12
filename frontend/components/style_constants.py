@@ -28,7 +28,7 @@ def label_style(size=13, weight=400, color=COLOR_TEXT_MUTED, transparent=False):
     """
 
 
-def add_shadow(widget, blur=20, x_offset=0, y_offset=4, color=(31, 41, 55, 35)):
+def add_shadow(widget, blur=0.5, x_offset=1, y_offset=1, color=(31, 41, 55, 35)):
     from PyQt5.QtWidgets import QGraphicsDropShadowEffect
     from PyQt5.QtGui import QColor
     shadow = QGraphicsDropShadowEffect(widget)
