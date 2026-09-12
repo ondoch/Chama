@@ -80,10 +80,10 @@ class EmployeeDashboard(QFrame):
         left, top, right, bottom = banner_layout.getContentsMargins()
         banner_layout.setContentsMargins(left, 10, right, bottom)
 
-        banner_1 = Banner4("resources/employees_1.svg", "24", "Employees", "+3 this month")
-        banner_2 = Banner4("resources/chamas_1.svg", "8", "Active Chamas", "+1 this month")
-        banner_3 = Banner4("resources/contributions_1.svg", "KSh 120,000", "Total Contributions", "this quarter")
-        banner_4 = Banner4("resources/pending_1.svg", "5", "Pending Approvals", "-2 since last week")
+        banner_1 = Banner4("resources/employees_1.svg", "12", "Employees")
+        banner_2 = Banner4("resources/active_users.svg", "8", "Active employees")
+        banner_3 = Banner4("resources/inactive_users.svg", "4", "Inactive employees")
+        banner_4 = Banner4("resources/manage.svg", "20", "Managed chamas")
 
         banner_layout.addWidget(banner_1, stretch=1)
         banner_layout.addWidget(banner_2, stretch=1)

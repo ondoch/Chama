@@ -16,13 +16,12 @@ from components.style_constants import (
 )
 
 class Banner4(QWidget):
-    def __init__(self, icon_path="resources/employees_1.svg", count="24",
-                 title="Employees", subtitle="+3 this month"):
+    def __init__(self, icon_path, header, sub_header_1, sub_header_2=None):
         super().__init__()
         self.icon_path = icon_path
-        self.count = count
-        self.title = title
-        self.subtitle = subtitle
+        self.header = header
+        self.sub_header_1 = sub_header_1
+        self.sub_header_2 = sub_header_2
         self.initUI()
         self.setStylesheet()
 
@@ -34,6 +33,7 @@ class Banner4(QWidget):
         container_widget.setObjectName("container")
         container_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         container_widget.setMinimumWidth(160)
+        container_widget.setMinimumHeight(100)
 
         container_widget_layout = QHBoxLayout(container_widget)
         container_widget_layout.setContentsMargins(16, 14, 16, 14)
@@ -55,19 +55,22 @@ class Banner4(QWidget):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(2)
 
-        header = QLabel(self.count)
+        header = QLabel(self.header)
         header.setObjectName("header")
-        sub_header_1 = QLabel(self.title)
+        sub_header_1 = QLabel(self.sub_header_1)
         sub_header_1.setObjectName("sub_header_1")
-        sub_header_2 = QLabel(self.subtitle)
-        sub_header_2.setObjectName("sub_header_2")
 
         info_layout.addWidget(header, alignment=Qt.AlignLeft)
         info_layout.addWidget(sub_header_1, alignment=Qt.AlignLeft)
-        info_layout.addWidget(sub_header_2, alignment=Qt.AlignLeft)
+
+        if self.sub_header_2:
+            sub_header_2 = QLabel(self.sub_header_2)
+            sub_header_2.setObjectName("sub_header_2")
+            info_layout.addWidget(sub_header_2, alignment=Qt.AlignLeft)
 
         container_widget_layout.addWidget(icon_wrapper, alignment=Qt.AlignVCenter)
         container_widget_layout.addLayout(info_layout)
+        container_widget_layout.setAlignment(info_layout, Qt.AlignVCenter)
         container_widget_layout.addStretch()
 
         main_layout.addWidget(container_widget)

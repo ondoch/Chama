@@ -23,6 +23,7 @@ from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
 from components.groups_table import GroupsTable
 from components.pagination import Pagination
+from components.banner_4 import Banner4
 
 class ChamaDashboard(QFrame):
     def __init__(self):
@@ -73,6 +74,22 @@ class ChamaDashboard(QFrame):
         top_row_layout.addStretch()
         top_row_layout.addWidget(self.add_chama_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
 
+        banner_layout = QHBoxLayout()
+        banner_layout.setSpacing(12)
+
+        left, top, right, bottom = banner_layout.getContentsMargins()
+        banner_layout.setContentsMargins(left, 10, right, bottom)
+
+        banner_1 = Banner4("resources/chamas.svg", "12", "Total Chamas", "3 Active")
+        banner_2 = Banner4("resources/people.svg", "248", "Members", "Across all")
+        banner_3 = Banner4("resources/inactive_users.svg", "4", "Pending Approvals", "Waiting for confirmation")
+        banner_4 = Banner4("resources/leader_1.svg", "8", "Chama Officials", "Across all chamas")
+
+        banner_layout.addWidget(banner_1, stretch=1)
+        banner_layout.addWidget(banner_2, stretch=1)
+        banner_layout.addWidget(banner_3, stretch=1)
+        banner_layout.addWidget(banner_4, stretch=1)
+
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
         search = SearchInput("Search...")
@@ -80,6 +97,7 @@ class ChamaDashboard(QFrame):
         search_widget_layout.addWidget(search, alignment=Qt.AlignLeft)
 
         container_widget_layout.addWidget(top_row_widget)
+        container_widget_layout.addLayout(banner_layout)
         container_widget_layout.addWidget(search_widget)
 
         self.table = GroupsTable()
