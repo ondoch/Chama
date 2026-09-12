@@ -189,5 +189,3 @@ class CustomTable(QWidget):
             return widget.currentText()
 
         return None
-
-

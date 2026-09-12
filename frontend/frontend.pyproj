@@ -21,6 +21,8 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="components\action_buttons.py" />
+    <Compile Include="components\avatar.py" />
     <Compile Include="components\banner.py" />
     <Compile Include="components\banner_2.py" />
     <Compile Include="components\banner_3.py" />
@@ -31,14 +33,18 @@
     <Compile Include="components\description.py" />
     <Compile Include="components\divider.py" />
     <Compile Include="components\file_upload.py" />
+    <Compile Include="components\footer_btn.py" />
     <Compile Include="components\form_dropdown.py" />
     <Compile Include="components\form_input.py" />
     <Compile Include="components\generate_form_input.py" />
+    <Compile Include="components\groups_table.py" />
     <Compile Include="components\header.py" />
+    <Compile Include="components\icon_text.py" />
     <Compile Include="components\information.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\menu_btn.py" />
     <Compile Include="components\officials_input.py" />
+    <Compile Include="components\pagination.py" />
     <Compile Include="components\progress_widget.py" />
     <Compile Include="components\radio_btn.py" />
     <Compile Include="components\search_input.py" />
@@ -65,6 +71,7 @@
     <Compile Include="tabs\employee\tab_3.py" />
     <Compile Include="tabs\employee\__init__.py" />
     <Compile Include="tabs\__init__.py" />
+    <Compile Include="widgets\chama_dashboard.py" />
     <Compile Include="widgets\chama_widget.py" />
     <Compile Include="widgets\employee_widget.py" />
     <Compile Include="widgets\widget_1.py" />
