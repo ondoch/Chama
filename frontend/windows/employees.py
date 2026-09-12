@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 from widgets.employee_widget import AddEmployee
+from widgets.employee_dashboard import EmployeeDashboard
 
 class EmployeeWindow(QWidget):
     def __init__(self):
@@ -11,5 +12,8 @@ class EmployeeWindow(QWidget):
 
     def initUI(self):
         layout = QHBoxLayout(self)
-        widget = AddEmployee()
-        layout.addWidget(widget)
+
+        widget_1 = AddEmployee()
+        widget_2 = EmployeeDashboard()
+
+        layout.addWidget(widget_2)

@@ -21,10 +21,10 @@ from components.style_constants import (
 )
 from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
-from components.groups_table import GroupsTable
+from components.members_table import MembersTable
 from components.pagination import Pagination
 
-class ChamaDashboard(QFrame):
+class EmployeeDashboard(QFrame):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -47,12 +47,12 @@ class ChamaDashboard(QFrame):
 
         icon = QLabel()
         icon.setFixedSize(50, 50)
-        pixmap = QPixmap("resources/group_1.svg")
+        pixmap = QPixmap("resources/employees.svg")
         icon.setPixmap(pixmap.scaled(49,49, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
-        header = QLabel("Groups")
+        header = QLabel("Employees")
         header.setObjectName("header")
-        label = QLabel("View and manage all groups")
+        label = QLabel("Manage Employees, Roles and Responsibilities")
         label.setObjectName("label")
 
         header_layout.addWidget(header)
@@ -60,7 +60,7 @@ class ChamaDashboard(QFrame):
         header_widget_layout.addWidget(icon)
         header_widget_layout.addLayout(header_layout)
 
-        self.add_chama_button = QPushButton("+ Add Chama")
+        self.add_chama_button = QPushButton("+ Add Employee")
         self.add_chama_button.setObjectName("add_chama_button")
         self.add_chama_button.setCursor(Qt.PointingHandCursor)
         self.add_chama_button.setFixedHeight(38)
@@ -76,18 +76,31 @@ class ChamaDashboard(QFrame):
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
         search = SearchInput("Search...")
+        status = FormDropdown(
+            "All",
+            ["Active", "Inactive", "Onboarding"],
+            height=40,
+            icon_path="resources/down_arrow.svg",
+        )
 
         search_widget_layout.addWidget(search, alignment=Qt.AlignLeft)
+        search_widget_layout.addWidget(status, alignment=Qt.AlignRight)
 
         container_widget_layout.addWidget(top_row_widget)
         container_widget_layout.addWidget(search_widget)
 
-        self.table = GroupsTable()
+        self.table = MembersTable()
         self.table.populate([
-            {"name": "Group name", "member_count": "8 members",
-             "contribution": "KSh 2,500", "created_on": "May 10, 2024"},
-             {"name": "Mwangaza Women Group", "member_count": "14 members",
-             "contribution": "KSh 500", "created_on": "October 5, 2026"},
+            {"name": "Evans Deya", "role": "Facilitator",
+             "chamas_managed": "8", "status": "Active"},
+             {"name": "Esther Nduta", "role": "Facilitator",
+             "chamas_managed": "1", "status": "Inactive"},
+             {"name": "Marya Prude", "role": "Facilitator",
+             "chamas_managed": "5", "status": "Active"},
+             {"name": "George Waweru", "role": "Facilitator",
+             "chamas_managed": "2", "status": "Inactive"},
+             {"name": "Emanuel Kisiangani", "role": "Facilitator",
+             "chamas_managed": "10", "status": "Onboarding"},
         ])
         container_widget_layout.addWidget(self.table)
 

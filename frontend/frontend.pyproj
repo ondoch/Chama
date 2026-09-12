@@ -41,6 +41,7 @@
     <Compile Include="components\header.py" />
     <Compile Include="components\icon_text.py" />
     <Compile Include="components\information.py" />
+    <Compile Include="components\members_table.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\menu_btn.py" />
     <Compile Include="components\officials_input.py" />
@@ -73,6 +74,7 @@
     <Compile Include="tabs\__init__.py" />
     <Compile Include="widgets\chama_dashboard.py" />
     <Compile Include="widgets\chama_widget.py" />
+    <Compile Include="widgets\employee_dashboard.py" />
     <Compile Include="widgets\employee_widget.py" />
     <Compile Include="widgets\widget_1.py" />
     <Compile Include="widgets\widget_10.py" />

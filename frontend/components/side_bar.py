@@ -35,9 +35,9 @@ class Sidebar(QFrame):
         self.setStyleSheet(f"background:{COLOR_SIDEBAR_BG}; border-right:1px solid #E4E6EC;")
         self._button_group = QButtonGroup(self)
         self._button_group.setExclusive(True)
-        self._init_ui()
+        self.initUI()
 
-    def _init_ui(self) -> None:
+    def initUI(self) -> None:
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 12, 0, 12)
         layout.setSpacing(2)
