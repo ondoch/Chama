@@ -6,6 +6,8 @@ from PyQt5.QtWidgets import(
     QLabel)
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QSize
+import random
+import string
 
 class GenerateFormInput(QFrame):
     def __init__(self, icon_path, placeholder):
@@ -31,20 +33,21 @@ class GenerateFormInput(QFrame):
         separator.setFixedWidth(1)
         separator.setFrameShape(QFrame.VLine)
 
-        label = QLabel(self.placeholder)
-        label.setObjectName("label")
+        self.label = QLabel(self.placeholder)
+        self.label.setObjectName("label")
 
-        generate_btn = QPushButton()
-        generate_btn.setObjectName("generate_btn")
-        generate_btn.setIcon(QIcon("resources/generate.svg"))
-        generate_btn.setIconSize(QSize(18,18))
-        generate_btn.setCursor(Qt.PointingHandCursor)
+        self.generate_btn = QPushButton()
+        self.generate_btn.setObjectName("generate_btn")
+        self.generate_btn.setIcon(QIcon("resources/generate.svg"))
+        self.generate_btn.setIconSize(QSize(18,18))
+        self.generate_btn.setCursor(Qt.PointingHandCursor)
+        self.generate_btn.clicked.connect(self.generateRegNumber)
 
         frame_layout.addWidget(icon)
         frame_layout.addWidget(separator)
-        frame_layout.addWidget(label)
+        frame_layout.addWidget(self.label)
         frame_layout.addStretch()
-        frame_layout.addWidget(generate_btn)
+        frame_layout.addWidget(self.generate_btn)
         main_layout.addLayout(frame_layout)
 
         self.setLayout(main_layout)
@@ -76,3 +79,9 @@ class GenerateFormInput(QFrame):
                 margin-right: 10px;
             }
         """)
+
+    def generateRegNumber(self):
+        initial = "EMP-"
+        suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        self.value = initial + suffix
+        self.label.setText(self.value)

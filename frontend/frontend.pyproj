@@ -59,6 +59,8 @@
     <Compile Include="components\__init__.py" />
     <Compile Include="components\date_widget.py" />
     <Compile Include="frontend.py" />
+    <Compile Include="modals\chama_information.py" />
+    <Compile Include="modals\__init__.py" />
     <Compile Include="tabs\chama\employment_info.py" />
     <Compile Include="tabs\chama\next_of_kin.py" />
     <Compile Include="tabs\chama\personal_info.py" />
@@ -101,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="components\" />
+    <Folder Include="modals\" />
     <Folder Include="tabs\" />
     <Folder Include="resources\" />
     <Folder Include="tabs\employee\" />
