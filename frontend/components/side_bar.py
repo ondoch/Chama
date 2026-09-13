@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 
 from components.menu_btn import MenuBtn
 from components.divider import Divider
-from components.style_constants import COLOR_SIDEBAR_BG
+from components.style_constants import COLOR_SIDEBAR_BG, COLOR_SECTION_LABEL
 
 
 class Sidebar(QFrame):
@@ -16,14 +16,22 @@ class Sidebar(QFrame):
     menu_index_selected = pyqtSignal(int)
     logout_clicked = pyqtSignal()
 
-    MENU_ITEMS: List[Tuple[str, str]] = [
-        ("Dashboard", "resources/dashboard.svg"),
-        ("Chamas", "resources/user_groups.svg"),
-        ("Employees", "resources/user_svg.svg"),
-        ("Onboarding", "resources/onboarding.svg"),
-        ("Assignments", "resources/assignments.svg"),
-        ("Reports", "resources/reports.svg"),
-        ("Audit logs", "resources/audit_logs.svg"),
+    MENU_SECTIONS: List[Tuple[Optional[str], List[Tuple[str, str]]]] = [
+        (None, [
+            ("Dashboard", "resources/dashboard.svg"),
+        ]),
+        ("Management", [
+            ("Chamas", "resources/user_groups.svg"),
+            ("Employees", "resources/user_svg.svg"),
+        ]),
+        ("Operations", [
+            ("Onboarding", "resources/onboarding.svg"),
+            ("Assignments", "resources/assignments.svg"),
+            ("Reports", "resources/reports.svg"),
+        ]),
+        ("Security", [
+            ("Audit logs", "resources/audit_logs.svg"),
+        ]),
     ]
 
     def __init__(self, app_name: str = "Chama Manager", logo_icon_path: Optional[str] = None,
@@ -44,10 +52,19 @@ class Sidebar(QFrame):
 
         layout.addLayout(self._build_header())
 
-        for index, (label, icon_path) in enumerate(self.MENU_ITEMS):
-            btn = MenuBtn(label, icon_path=icon_path)
-            self._button_group.addButton(btn, index)
-            self._wrap(layout, btn)
+        flat_index = 0
+        for i, (section_title, items) in enumerate(self.MENU_SECTIONS):
+            if section_title:
+                layout.addWidget(self._build_section_label(section_title))
+            for label, icon_path in items:
+                btn = MenuBtn(label, icon_path=icon_path)
+                self._button_group.addButton(btn, flat_index)
+                self._wrap(layout, btn)
+                flat_index += 1
+
+            if i < len(self.MENU_SECTIONS) - 1:
+                layout.addWidget(Divider())
+
         if self._button_group.buttons():
             self._button_group.buttons()[0].setChecked(True)
         self._button_group.buttonClicked.connect(self._on_button_clicked)
@@ -79,6 +96,15 @@ class Sidebar(QFrame):
         header.addWidget(title)
         header.addStretch()
         return header
+
+    @staticmethod
+    def _build_section_label(text: str) -> QLabel:
+        label = QLabel(text)
+        label.setStyleSheet(
+            f"color:{COLOR_SECTION_LABEL}; font-size:11px; font-weight:600; "
+            f"padding: 10px 16px 4px 16px;"
+        )
+        return label
 
     @staticmethod
     def _wrap(layout: QVBoxLayout, widget: QWidget) -> None:
