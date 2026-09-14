@@ -20,10 +20,6 @@ class AddChama(QFrame):
 
         self.tab_1 = Tab1()
 
-        self.tab_1.next_clicked.connect(self.nextBtnClicked)
         self.tab_1.cancel_clicked.connect(self.cancel_clicked.emit)
 
         main_layout.addWidget(self.tab_1)
-
-    def nextBtnClicked(self):
-        print("Chama basic information added")

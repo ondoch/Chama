@@ -19,4 +19,6 @@ class ChamasWindow(QWidget):
 
     def addChama(self):
         dialog = ChamaInformation(self)
-        dialog.exec_()
+        if dialog.exec_() == ChamaInformation.Accepted:
+            values = dialog.values
+            print(values)

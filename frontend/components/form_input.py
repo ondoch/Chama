@@ -30,13 +30,13 @@ class FormInput(QFrame):
         separator.setFixedWidth(1)
         separator.setFrameShape(QFrame.VLine)
 
-        entry = QLineEdit()
-        entry.setObjectName("entry")
-        entry.setPlaceholderText(self.placeholder)
+        self.entry = QLineEdit()
+        self.entry.setObjectName("entry")
+        self.entry.setPlaceholderText(self.placeholder)
 
         frame_layout.addWidget(icon)
         frame_layout.addWidget(separator)
-        frame_layout.addWidget(entry)
+        frame_layout.addWidget(self.entry)
         main_layout.addLayout(frame_layout)
 
         self.setLayout(main_layout)
@@ -63,3 +63,7 @@ class FormInput(QFrame):
                 font-family: Arial, sans-serif;
             }
         """)
+
+    def returnValue(self):
+        value = self.entry.text()
+        return value

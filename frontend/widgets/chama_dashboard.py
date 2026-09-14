@@ -101,12 +101,12 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addWidget(search_widget)
 
         self.table = GroupsTable()
-        self.table.populate([
+        """self.table.populate([
             {"name": "Group name", "member_count": "8 members",
              "contribution": "KSh 2,500", "created_on": "May 10, 2024"},
              {"name": "Mwangaza Women Group", "member_count": "14 members",
              "contribution": "KSh 500", "created_on": "October 5, 2026"},
-        ])
+        ])"""
         container_widget_layout.addWidget(self.table)
 
         footer = Pagination()

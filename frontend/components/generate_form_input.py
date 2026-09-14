@@ -81,7 +81,13 @@ class GenerateFormInput(QFrame):
         """)
 
     def generateRegNumber(self):
-        initial = "EMP-"
+        initial = "CHM-"
         suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         self.value = initial + suffix
         self.label.setText(self.value)
+        self.generate_btn.setEnabled(False)
+        self.generate_btn.setCursor(Qt.ArrowCursor)
+
+    def returnValue(self):
+        value = self.label.text()
+        return value
