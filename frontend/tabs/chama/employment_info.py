@@ -51,19 +51,19 @@ class EmploymentInfo(QFrame):
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
 
-        employment_status = MemberFormInput("Employment status")
-        employer = MemberFormInput("Employment/Business Name")
-        occupation = MemberFormInput("Occupation/Job title")
-        business_address = MemberFormInput("Employer/Business Address")
+        self.employment_status = MemberFormInput("Employment status")
+        self.employer = MemberFormInput("Employment/Business Name")
+        self.occupation = MemberFormInput("Occupation/Job title")
+        self.business_address = MemberFormInput("Employer/Business Address")
 
-        source_of_income = MemberFormInput("Source of income")
+        self.source_of_income = MemberFormInput("Source of income")
 
-        grid.addWidget(employment_status, 0, 0)
-        grid.addWidget(employer, 1, 0)
-        grid.addWidget(occupation, 2, 0)
-        grid.addWidget(business_address, 3, 0)
+        grid.addWidget(self.employment_status, 0, 0)
+        grid.addWidget(self.employer, 1, 0)
+        grid.addWidget(self.occupation, 2, 0)
+        grid.addWidget(self.business_address, 3, 0)
 
-        grid.addWidget(source_of_income, 0, 1)
+        grid.addWidget(self.source_of_income, 0, 1)
 
         nav_row = QHBoxLayout()
         nav_row.setContentsMargins(10, 0, 10, 0)

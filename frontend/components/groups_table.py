@@ -5,6 +5,7 @@ from components.custom_table import CustomTable
 from components.avatar import Avatar
 from components.action_buttons import ActionButtonGroup
 from components.style_constants import FONT_FAMILY, COLOR_TEXT_PRIMARY
+from modals.members_information import MemberInformation
 
 
 def _make_avatar_cell(value, row_data):
@@ -31,19 +32,24 @@ def _actions_factory(actions_config):
     return factory
 
 
-GROUP_COLUMNS = [
-    {"header": "Group name", "key": "name", "factory": _make_avatar_cell},
-    {"header": "Members", "key": "member_count"},
-    {"header": "Contribution", "key": "contribution"},
-    {"header": "Created on", "key": "created_on"},
-    {"header": "Actions", "key": None, "width": 110,
-     "factory": _actions_factory([
-         {"label": "View", "width": 60, "callback": lambda row: print("View", row)},
-         {"icon": "resources/more-vertical.svg", "callback": lambda row: print("More", row)},
-     ])},
-]
-
-
 class GroupsTable(CustomTable):
     def __init__(self):
-        super().__init__(GROUP_COLUMNS)
+        columns = [
+            {"header": "Group name", "key": "name", "factory": _make_avatar_cell},
+            {"header": "Members", "key": "member_count"},
+            {"header": "Contribution", "key": "contribution"},
+            {"header": "Created on", "key": "created_on"},
+            {"header": "Actions", "key": None, "width": 110,
+             "factory": _actions_factory([
+                 {"label": "View", "width": 60, "callback": self.viewGroup},
+                 {"icon": "resources/more-vertical.svg", "callback": self.openAddMemberDialog},
+             ])},
+        ]
+        super().__init__(columns)
+
+    def viewGroup(self, row):
+        print("View", row)
+
+    def openAddMemberDialog(self, row):
+        dialog = MemberInformation(parent=self)
+        dialog.exec_()

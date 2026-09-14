@@ -12,7 +12,6 @@ from tabs.chama.next_of_kin import NextOfKin
 from tabs.chama.uploads import Uploads
 
 class Tab2(QFrame):
-    back_to_tab1 = pyqtSignal()
     finished = pyqtSignal()
 
     def __init__(self):
@@ -38,7 +37,7 @@ class Tab2(QFrame):
         self.widget_4.previous_btn.clicked.connect(self.employmentInfo)
         self.widget_3.previous_btn.clicked.connect(self.residentialInfo)
         self.widget_2.previous_btn.clicked.connect(self.personalInfo)
-        self.widget_1.previous_btn.clicked.connect(self.back_to_tab1.emit)
+        self.widget_1.cancel_btn.clicked.connect(self.printer)
 
         self.widget_5.add_btn.clicked.connect(self.personalInfo)
         self.widget_5.finish_btn.clicked.connect(self.finished.emit)
@@ -50,6 +49,9 @@ class Tab2(QFrame):
         self.stack.addWidget(self.widget_5)
 
         main_layout.addWidget(self.stack)
+
+    def printer(self):
+        print("Cancel")
 
     def personalInfo(self):
         self.stack.setCurrentIndex(0)

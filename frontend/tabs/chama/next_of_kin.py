@@ -51,15 +51,15 @@ class NextOfKin(QFrame):
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
 
-        full_name = MemberFormInput("Full Name")
-        relationship = MemberFormInput("Relationship")
-        phone_number = MemberFormInput("Phone Number")
-        address = MemberFormInput("Physical Address")
+        self.full_name = MemberFormInput("Full Name")
+        self.relationship = MemberFormInput("Relationship")
+        self.phone_number = MemberFormInput("Phone Number")
+        self.address = MemberFormInput("Physical Address")
 
-        grid.addWidget(full_name, 0, 0)
-        grid.addWidget(relationship, 1, 0)
-        grid.addWidget(phone_number, 2, 0)
-        grid.addWidget(address, 3, 0)
+        grid.addWidget(self.full_name, 0, 0)
+        grid.addWidget(self.relationship, 1, 0)
+        grid.addWidget(self.phone_number, 2, 0)
+        grid.addWidget(self.address, 3, 0)
 
         nav_row = QHBoxLayout()
         nav_row.setContentsMargins(10, 0, 10, 0)

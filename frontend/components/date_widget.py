@@ -61,6 +61,25 @@ class DateWidget(QFrame):
         main_layout.addWidget(label)
         main_layout.addLayout(entry_layout)
 
+    def returnValue(self):
+        day_text = self.day_edit.text().strip()
+        month_text = self.month_edit.text().strip()
+        year_text = self.year_edit.text().strip()
+
+        if not (day_text and month_text and year_text):
+            return ""
+
+        day = int(day_text)
+        month = int(month_text)
+        year = int(year_text)
+
+        date = QDate(year, month, day)
+
+        if not date.isValid():
+            return ""
+
+        return date.toString("MMMM d, yyyy")
+
     def setStylesheet(self):
         self.setStyleSheet(f"""
             QFrame{{

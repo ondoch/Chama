@@ -8,7 +8,7 @@ from windows.main_window import MainWindow
 class FrontEnd(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("FrontEnd")
+        self.setWindowTitle("Chama Manager")
         self.trialUI()
 
     def trialUI(self):

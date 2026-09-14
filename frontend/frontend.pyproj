@@ -45,6 +45,7 @@
     <Compile Include="components\members_table.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\menu_btn.py" />
+    <Compile Include="components\top_bar.py" />
     <Compile Include="components\officials_input.py" />
     <Compile Include="components\pagination.py" />
     <Compile Include="components\progress_widget.py" />
@@ -60,6 +61,7 @@
     <Compile Include="components\date_widget.py" />
     <Compile Include="frontend.py" />
     <Compile Include="modals\chama_information.py" />
+    <Compile Include="modals\members_information.py" />
     <Compile Include="modals\__init__.py" />
     <Compile Include="tabs\chama\employment_info.py" />
     <Compile Include="tabs\chama\next_of_kin.py" />
@@ -100,6 +102,7 @@
     <Compile Include="windows\main_window.py" />
     <Compile Include="windows\onboarding.py" />
     <Compile Include="windows\reports.py" />
+    <Compile Include="windows\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="components\" />

@@ -25,7 +25,7 @@ from components.style_constants import (
 from widgets.widget_7 import Radio
 
 class PersonalInfo(QFrame):
-    previous_clicked = pyqtSignal()
+    close_clicked = pyqtSignal()
     next_clicked = pyqtSignal()
 
     def __init__(self):
@@ -51,35 +51,35 @@ class PersonalInfo(QFrame):
         grid.setColumnStretch(0, 1)
         grid.setColumnStretch(1, 1)
 
-        full_name = MemberFormInput("Full name (As per I.D/Passport)")
-        date_picker = DateWidget("Date of birth")
-        phone_number = MemberFormInput("Phone Number")
-        email_address = MemberFormInput("Email Address")
-        gender = Radio()
+        self.full_name = MemberFormInput("Full name (As per I.D/Passport)")
+        self.date_picker = DateWidget("Date of birth")
+        self.phone_number = MemberFormInput("Phone Number")
+        self.email_address = MemberFormInput("Email Address")
+        self.radio = Radio()
 
-        nationality = MemberFormInput("Nationality")
-        national_id = MemberFormInput("National I.D/Passport")
-        pin = MemberFormInput("KRA Pin")
+        self.nationality = MemberFormInput("Nationality")
+        self.national_id = MemberFormInput("National I.D/Passport")
+        self.pin = MemberFormInput("KRA Pin")
 
-        grid.addWidget(full_name, 0, 0)
-        grid.addWidget(date_picker, 1, 0)
-        grid.addWidget(phone_number, 2, 0)
-        grid.addWidget(email_address, 3, 0)
-        grid.addWidget(gender, 4, 0)
+        grid.addWidget(self.full_name, 0, 0)
+        grid.addWidget(self.date_picker, 1, 0)
+        grid.addWidget(self.phone_number, 2, 0)
+        grid.addWidget(self.email_address, 3, 0)
+        grid.addWidget(self.radio, 4, 0)
 
-        grid.addWidget(nationality, 0, 1)
-        grid.addWidget(national_id, 1, 1)
-        grid.addWidget(pin, 2, 1)
+        grid.addWidget(self.nationality, 0, 1)
+        grid.addWidget(self.national_id, 1, 1)
+        grid.addWidget(self.pin, 2, 1)
 
         nav_row = QHBoxLayout()
         nav_row.setContentsMargins(10, 0, 10, 0)
 
-        self.previous_btn = QPushButton("Previous")
-        self.previous_btn.setIcon(QIcon("resources/left_black.svg"))
-        self.previous_btn.setIconSize(QSize(16, 16))
-        self.previous_btn.setLayoutDirection(Qt.LeftToRight)
-        self.previous_btn.setMinimumWidth(100)
-        self.previous_btn.setStyleSheet(f"padding: 8px 16px; border:1px solid {COLOR_ACCENT_BLUE}; color: #000; border-radius: 6px")
+        self.cancel_btn = QPushButton("Previous")
+        self.cancel_btn.setIcon(QIcon("resources/left_black.svg"))
+        self.cancel_btn.setIconSize(QSize(16, 16))
+        self.cancel_btn.setLayoutDirection(Qt.LeftToRight)
+        self.cancel_btn.setMinimumWidth(100)
+        self.cancel_btn.setStyleSheet(f"padding: 8px 16px; border:1px solid {COLOR_ACCENT_BLUE}; color: #000; border-radius: 6px")
 
         self.next_btn = QPushButton("Save")
         self.next_btn.setIcon(QIcon("resources/right_arrow.svg"))
@@ -88,13 +88,13 @@ class PersonalInfo(QFrame):
         self.next_btn.setMinimumWidth(100)
         self.next_btn.setStyleSheet(f"padding: 8px 16px; background-color:{COLOR_ACCENT_BLUE}; color: #FFFFFF; border: none; border-radius: 6px")
 
-        for btn in (self.previous_btn, self.next_btn):
+        for btn in (self.cancel_btn, self.next_btn):
             btn.setCursor(Qt.PointingHandCursor)
 
-        self.previous_btn.clicked.connect(self.previous_clicked.emit)
+        self.cancel_btn.clicked.connect(self.close_clicked.emit)
         self.next_btn.clicked.connect(self.next_clicked.emit)
 
-        nav_row.addWidget(self.previous_btn)
+        nav_row.addWidget(self.cancel_btn)
         nav_row.addStretch()
         nav_row.addWidget(self.next_btn)
 

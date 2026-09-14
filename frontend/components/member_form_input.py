@@ -16,10 +16,14 @@ class MemberFormInput(QFrame):
     def initUI(self):
         main_layout = QVBoxLayout(self)
         header = QLabel(self.header)
-        entry = QLineEdit()
-        entry.setFixedHeight(40)
+        self.entry = QLineEdit()
+        self.entry.setFixedHeight(40)
         main_layout.addWidget(header)
-        main_layout.addWidget(entry)
+        main_layout.addWidget(self.entry)
+
+    def returnValue(self):
+        value = self.entry.text()
+        return value
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

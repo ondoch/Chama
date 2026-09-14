@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from PyQt5.QtWidgets import (
     QFrame,
     QLabel,
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
-    QPushButton
+    QPushButton,
+    QDialog
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
@@ -24,10 +27,12 @@ from components.form_dropdown import FormDropdown
 from components.groups_table import GroupsTable
 from components.pagination import Pagination
 from components.banner_4 import Banner4
+from modals.chama_information import ChamaInformation
 
 class ChamaDashboard(QFrame):
     def __init__(self):
         super().__init__()
+        self.chamas = []
         self.initUI()
         self.setStylesheet()
 
@@ -65,6 +70,7 @@ class ChamaDashboard(QFrame):
         self.add_chama_button.setObjectName("add_chama_button")
         self.add_chama_button.setCursor(Qt.PointingHandCursor)
         self.add_chama_button.setFixedHeight(38)
+        self.add_chama_button.clicked.connect(self.openAddChamaDialog)
 
         top_row_widget = QWidget()
         top_row_layout = QHBoxLayout(top_row_widget)
@@ -101,18 +107,33 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addWidget(search_widget)
 
         self.table = GroupsTable()
-        """self.table.populate([
-            {"name": "Group name", "member_count": "8 members",
-             "contribution": "KSh 2,500", "created_on": "May 10, 2024"},
-             {"name": "Mwangaza Women Group", "member_count": "14 members",
-             "contribution": "KSh 500", "created_on": "October 5, 2026"},
-        ])"""
+
         container_widget_layout.addWidget(self.table)
 
         footer = Pagination()
         container_widget_layout.addWidget(footer, alignment=Qt.AlignBottom)
 
         main_layout.addWidget(container_widget)
+
+    def openAddChamaDialog(self):
+        dialog = ChamaInformation(self)
+        if dialog.exec_() == QDialog.Accepted:
+            self.addChama(dialog.values)
+
+    def addChama(self, values):
+        row = {
+            "name": values.get("chama_name", ""),
+            "member_count": "0 members",
+            "contribution": f"KSh {values.get('contribution', '0')}",
+            "created_on": self.formattedToday(),
+        }
+        self.chamas.append(row)
+        self.table.populate(self.chamas)
+
+    @staticmethod
+    def formattedToday():
+        now = datetime.now()
+        return f"{now.strftime('%B')} {now.day}, {now.year}"
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

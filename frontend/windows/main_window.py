@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 )
 
 from components.side_bar import Sidebar
+from components.top_bar import TopBar
 
 from windows.dashboard import DashboardWindow
 from windows.chamas import ChamasWindow
@@ -21,9 +22,12 @@ class MainWindow(QWidget):
         super().__init__()
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         container_widget = QWidget()
         container_widget_layout = QVBoxLayout(container_widget)
+        container_widget_layout.setContentsMargins(0, 0, 0, 0)
 
+        top_bar = TopBar()
         side_bar = Sidebar()
 
         self.stacked_widget = QStackedWidget()
@@ -36,6 +40,7 @@ class MainWindow(QWidget):
         self.stacked_widget.addWidget(ReportsWindow())        # 5 - Reports
         self.stacked_widget.addWidget(AuditLogWindow())       # 6 - Audit logs
 
+        container_widget_layout.addWidget(top_bar)
         container_widget_layout.addWidget(self.stacked_widget)
 
         side_bar.menu_index_selected.connect(self.stacked_widget.setCurrentIndex)
