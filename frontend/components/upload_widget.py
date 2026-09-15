@@ -13,6 +13,7 @@ from components.style_constants import (
     COLOR_TEXT_MUTED
 )
 
+
 class UploadWidget(QFrame):
     file_selected = pyqtSignal(str)
 

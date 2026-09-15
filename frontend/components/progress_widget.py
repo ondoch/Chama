@@ -16,6 +16,7 @@ from components.style_constants import (
     COLOR_TEXT_MUTED
 )
 
+
 class ProgressWidget(QWidget):
     upload_finished = pyqtSignal(str)
     upload_cancelled = pyqtSignal()
@@ -87,6 +88,7 @@ class ProgressWidget(QWidget):
         main_layout.addWidget(container)
 
     def start_upload(self, file_path):
+        """Show the widget and begin (simulated) progress for file_path."""
         self._current_file = file_path
         self.file_name_label.setText(os.path.basename(file_path))
         try:
@@ -105,7 +107,6 @@ class ProgressWidget(QWidget):
             self.progress_bar.setValue(100)
             self._timer.stop()
             self.upload_finished.emit(self._current_file)
-            self.hide()
         else:
             self.progress_bar.setValue(value)
 
