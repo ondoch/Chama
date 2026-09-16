@@ -1,15 +1,19 @@
 from PyQt5.QtWidgets import (
     QFrame,
     QStackedWidget,
-    QHBoxLayout
+    QHBoxLayout,
+    QVBoxLayout
 )
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 
 from tabs.chama.personal_info import PersonalInfo
 from tabs.chama.residential_info import ResidentialInfo
 from tabs.chama.employment_info import EmploymentInfo
 from tabs.chama.next_of_kin import NextOfKin
 from tabs.chama.uploads import Uploads
+
+from components.progress_tracker import StepProgressTracker
+
 
 class Tab2(QFrame):
     finished = pyqtSignal()
@@ -19,7 +23,19 @@ class Tab2(QFrame):
         self.initUI()
 
     def initUI(self):
-        main_layout = QHBoxLayout(self)
+        main_layout = QVBoxLayout(self)
+        self.tracker = StepProgressTracker(
+            [
+                "Personal information",
+                "Residential information",
+                "Employment/Occupation",
+                "Next of kin/Emergency contact",
+                "Uploads",
+            ]
+        )
+
+        main_layout.addWidget(self.tracker, alignment=Qt.AlignCenter)
+
         self.stack = QStackedWidget()
 
         self.widget_1 = PersonalInfo()
@@ -47,6 +63,8 @@ class Tab2(QFrame):
         self.stack.addWidget(self.widget_3)
         self.stack.addWidget(self.widget_4)
         self.stack.addWidget(self.widget_5)
+
+        self.stack.currentChanged.connect(self.tracker.set_current_step)
 
         main_layout.addWidget(self.stack)
 

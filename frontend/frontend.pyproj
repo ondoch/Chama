@@ -45,6 +45,7 @@
     <Compile Include="components\members_table.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\menu_btn.py" />
+    <Compile Include="components\progress_tracker.py" />
     <Compile Include="components\top_bar.py" />
     <Compile Include="components\officials_input.py" />
     <Compile Include="components\pagination.py" />
