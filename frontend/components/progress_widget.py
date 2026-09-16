@@ -88,7 +88,6 @@ class ProgressWidget(QWidget):
         main_layout.addWidget(container)
 
     def start_upload(self, file_path):
-        """Show the widget and begin (simulated) progress for file_path."""
         self._current_file = file_path
         self.file_name_label.setText(os.path.basename(file_path))
         try:

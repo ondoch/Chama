@@ -26,9 +26,7 @@ class UploadContainer(QFrame):
         self.progress_widget.upload_cancelled.connect(self.handle_upload_cancelled)
 
     def handle_file_selected(self, file_path):
-        # upload_widget stays visible — just kick off the progress widget
         self.progress_widget.start_upload(file_path)
 
     def handle_upload_cancelled(self):
-        # no-op for now — placeholder in case you want to reset state later
         pass
