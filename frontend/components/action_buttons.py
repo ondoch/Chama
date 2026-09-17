@@ -39,6 +39,6 @@ class ActionButtonGroup(QWidget):
 
             callback = action.get("callback")
             if callback:
-                btn.clicked.connect(lambda _checked, cb=callback: cb(row_data))
+                btn.clicked.connect(lambda _checked, cb=callback, b=btn: cb(row_data, b))
 
             layout.addWidget(btn)
