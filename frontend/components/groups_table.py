@@ -1,4 +1,11 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QMessageBox, QDialog
+from PyQt5.QtWidgets import (
+    QWidget,
+    QLabel,
+    QHBoxLayout, 
+    QVBoxLayout,
+    QMessageBox,
+    QDialog
+)
 from PyQt5.QtCore import Qt
 
 from components.custom_table import CustomTable
@@ -8,7 +15,6 @@ from components.context_menu import ContextMenu
 from components.style_constants import FONT_FAMILY, COLOR_TEXT_PRIMARY
 from tabs.chama.tab_3 import Tab3
 from modals.members_information import MemberInformation
-
 
 def _make_avatar_cell(value, row_data):
     container = QWidget()
