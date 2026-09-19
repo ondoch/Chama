@@ -11,6 +11,7 @@ class FormInput(QFrame):
         super().__init__()
         self.icon_path = icon_path
         self.placeholder = placeholder
+        self._has_error = False
         self.initUI()
         self.setStylesheet()
 
@@ -43,27 +44,35 @@ class FormInput(QFrame):
         self.setFixedHeight(40)
 
     def setStylesheet(self):
-        self.setStyleSheet("""
-            QFrame{
-                border: 1px solid #D8DBDE;
+        border_color = "#E53935" if getattr(self, "_has_error", False) else "#D8DBDE"
+        self.setStyleSheet(f"""
+            QFrame{{
+                border: 1px solid {border_color};
                 border-radius: 5px;
-            }
-            QLabel#icon{
+            }}
+            QLabel#icon{{
                 border: none;
                 margin: 5px;
-            }
-            QFrame#separator{
+            }}
+            QFrame#separator{{
                 border: none;
                 background-color: #D8DBDE;
-            }
-            QLineEdit#entry{
+            }}
+            QLineEdit#entry{{
                 border: none;
                 background: transparent;
                 font-size: 12px;
                 font-family: Arial, sans-serif;
-            }
+            }}
         """)
 
     def returnValue(self):
         value = self.entry.text()
         return value
+
+    def isEmpty(self):
+        return not self.entry.text().strip()
+
+    def setError(self, has_error):
+        self._has_error = has_error
+        self.setStylesheet()

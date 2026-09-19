@@ -11,6 +11,7 @@ from components.style_constants import (
     COLOR_TEXT_PRIMARY,
 )
 from components.custom_table import CustomTable
+from components.search_input import SearchInput
 
 ROLE_STYLES = {
     "chairperson": {"bg": "#cfe8ff", "text": "#1c5d99", "border": "#8fc4f0"},
@@ -67,6 +68,8 @@ class MemberSummary(QWidget):
         header = QLabel("Mwangaza Women Group")
         header.setObjectName("header")
 
+        search = SearchInput("Search member...")
+
         columns = [
             {"header": "Name", "key": "name"},
             {
@@ -79,6 +82,7 @@ class MemberSummary(QWidget):
         self.table = CustomTable(columns)
 
         main_layout.addWidget(header)
+        main_layout.addWidget(search, alignment=Qt.AlignLeft)
         main_layout.addWidget(self.table)
 
     def setStylesheet(self):

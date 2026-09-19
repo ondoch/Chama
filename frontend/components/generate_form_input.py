@@ -14,6 +14,8 @@ class GenerateFormInput(QFrame):
         super().__init__()
         self.icon_path = icon_path
         self.placeholder = placeholder
+        self.value = ""
+        self._has_error = False
         self.initUI()
         self.setStylesheet()
 
@@ -54,30 +56,31 @@ class GenerateFormInput(QFrame):
         self.setFixedHeight(40)
 
     def setStylesheet(self):
-        self.setStyleSheet("""
-            QFrame{
-                border: 1px solid #D8DBDE;
+        border_color = "#E53935" if getattr(self, "_has_error", False) else "#D8DBDE"
+        self.setStyleSheet(f"""
+            QFrame{{
+                border: 1px solid {border_color};
                 border-radius: 5px;
-            }
-            QLabel#icon{
+            }}
+            QLabel#icon{{
                 border: none;
                 margin: 5px;
-            }
-            QFrame#separator{
+            }}
+            QFrame#separator{{
                 border: none;
                 background-color: #D8DBDE;
-            }
-            QLabel#label{
+            }}
+            QLabel#label{{
                 border: none;
                 background: transparent;
                 font-size: 12px;
                 font-family: Arial, sans-serif;
-            }
-            QPushButton#generate_btn{
+            }}
+            QPushButton#generate_btn{{
                 border: none;
                 background: transparent;
                 margin-right: 10px;
-            }
+            }}
         """)
 
     def generateRegNumber(self):
@@ -87,7 +90,16 @@ class GenerateFormInput(QFrame):
         self.label.setText(self.value)
         self.generate_btn.setEnabled(False)
         self.generate_btn.setCursor(Qt.ArrowCursor)
+        self.setError(False)
 
     def returnValue(self):
         value = self.label.text()
         return value
+
+    def isEmpty(self):
+        text = self.label.text().strip()
+        return text == "" or text == self.placeholder
+
+    def setError(self, has_error):
+        self._has_error = has_error
+        self.setStylesheet()
