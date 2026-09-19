@@ -17,7 +17,6 @@ COLOR_SIDEBAR_HOVER = "#0062D1"
 COLOR_SIDEBAR_SELECT = "#2E8FFF"
 COLOR_SECTION_LABEL = "#2E8FFF"
 
-
 def label_style(size=13, weight=400, color=COLOR_TEXT_MUTED, transparent=False):
     bg = "background: transparent;" if transparent else ""
     return f"""
@@ -27,7 +26,6 @@ def label_style(size=13, weight=400, color=COLOR_TEXT_MUTED, transparent=False):
         color: {color};
         {bg}
     """
-
 
 def add_shadow(widget, blur=0.5, x_offset=1, y_offset=1, color=(31, 41, 55, 35)):
     from PyQt5.QtWidgets import QGraphicsDropShadowEffect

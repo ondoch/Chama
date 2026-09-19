@@ -64,6 +64,7 @@
     <Compile Include="frontend.py" />
     <Compile Include="modals\chama_information.py" />
     <Compile Include="modals\members_information.py" />
+    <Compile Include="modals\member_summary.py" />
     <Compile Include="modals\__init__.py" />
     <Compile Include="tabs\chama\employment_info.py" />
     <Compile Include="tabs\chama\next_of_kin.py" />
@@ -83,6 +84,7 @@
     <Compile Include="widgets\chama_widget.py" />
     <Compile Include="widgets\employee_dashboard.py" />
     <Compile Include="widgets\employee_widget.py" />
+    <Compile Include="widgets\widget_12.py" />
     <Compile Include="widgets\widget_1.py" />
     <Compile Include="widgets\widget_10.py" />
     <Compile Include="widgets\widget_11.py" />

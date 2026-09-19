@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
-    QHBoxLayout, 
+    QHBoxLayout,
     QVBoxLayout,
     QMessageBox,
     QDialog
@@ -15,6 +15,8 @@ from components.context_menu import ContextMenu
 from components.style_constants import FONT_FAMILY, COLOR_TEXT_PRIMARY
 from tabs.chama.tab_3 import Tab3
 from modals.members_information import MemberInformation
+from modals.member_summary import MemberSummaryDialog
+
 
 def _make_avatar_cell(value, row_data):
     container = QWidget()
@@ -50,21 +52,22 @@ class GroupsTable(CustomTable):
             {"header": "Actions", "key": None, "width": 110,
              "factory": _actions_factory([
                  {"label": "View", "width": 60,
-                  "callback": lambda row, btn=None: self.viewGroup(row)},
+                  "callback": lambda row, btn=None: self.openMemberSummaryDialog(row)},
                  {"icon": "resources/more-vertical.svg",
                   "callback": lambda row, btn=None: self.openContextMenu(row, btn)},
              ])},
         ]
         super().__init__(columns)
 
-    def viewGroup(self, row):
-        print("View", row)
-
     def openContextMenu(self, row, button=None):
         ContextMenu.show_at_button(button, parent=self, row_data=row)
 
     def openAddMemberDialog(self, row):
         dialog = MemberInformation(parent=self)
+        dialog.exec_()
+
+    def openMemberSummaryDialog(self, row):
+        dialog = MemberSummaryDialog(parent=self, members=row.get("members") if row else None)
         dialog.exec_()
 
     def openOfficialsDialog(self, row):
