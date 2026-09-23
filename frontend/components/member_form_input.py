@@ -25,6 +25,20 @@ class MemberFormInput(QFrame):
         value = self.entry.text()
         return value
 
+    def isEmpty(self):
+        return self.entry.text().strip() == ""
+
+    def setError(self, has_error):
+        border_color = "#e53935" if has_error else COLOR_BORDER
+        self.entry.setStyleSheet(f"""
+            border: 1px solid {border_color};
+            background: transparent;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            border-radius: 5px;
+            padding-left: 5px;
+        """)
+
     def setStylesheet(self):
         self.setStyleSheet(f"""
             QFrame{{

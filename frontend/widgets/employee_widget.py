@@ -34,18 +34,18 @@ class AddEmployee(QFrame):
 
         self.stack = QStackedWidget()
 
-        tab_1 = Tab1()
-        tab_2 = Tab2()
-        tab_3 = Tab3()
+        self.tab_1 = Tab1()
+        self.tab_2 = Tab2()
+        self.tab_3 = Tab3()
 
-        tab_1.employee_info.next_button.clicked.connect(self.employeeInformation)
-        tab_2.previous_btn.clicked.connect(self.rolesPermissions)
-        tab_2.next_btn.clicked.connect(self.chamaAssignments)
-        tab_3.previous_btn.clicked.connect(self.employeeInformation)
+        self.tab_1.employee_info.next_button.clicked.connect(self.employeeInformation)
+        self.tab_2.previous_btn.clicked.connect(self.rolesPermissions)
+        self.tab_2.next_btn.clicked.connect(self.chamaAssignments)
+        self.tab_3.previous_btn.clicked.connect(self.employeeInformation)
 
-        self.stack.addWidget(tab_1)
-        self.stack.addWidget(tab_2)
-        self.stack.addWidget(tab_3)
+        self.stack.addWidget(self.tab_1)
+        self.stack.addWidget(self.tab_2)
+        self.stack.addWidget(self.tab_3)
 
         main_layout.addWidget(self.stack)
 

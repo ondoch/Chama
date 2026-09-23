@@ -39,14 +39,12 @@ class DateWidget(QFrame):
         self.day_edit.setAlignment(Qt.AlignCenter)
 
         self.month_edit = QLineEdit()
-        self.month_edit = QLineEdit()
         self.month_edit.setPlaceholderText("M")
         self.month_edit.setValidator(QIntValidator(1, 12, self))
         self.month_edit.setMaxLength(2)
         self.month_edit.setFixedWidth(50)
         self.month_edit.setAlignment(Qt.AlignCenter)
 
-        self.year_edit = QLineEdit()
         self.year_edit = QLineEdit()
         self.year_edit.setPlaceholderText("YYYY")
         self.year_edit.setValidator(QIntValidator(1900, 2100, self))
@@ -79,6 +77,21 @@ class DateWidget(QFrame):
             return ""
 
         return date.toString("MMMM d, yyyy")
+
+    def isEmpty(self):
+        return self.returnValue() == ""
+
+    def setError(self, has_error):
+        border_color = "#e53935" if has_error else COLOR_BORDER
+        edit_style = f"""
+            border: 1px solid {border_color};
+            border-radius: 6px;
+            padding: 8px 4px;
+            font-size: 14px;
+            background: white;
+        """
+        for edit in (self.day_edit, self.month_edit, self.year_edit):
+            edit.setStyleSheet(edit_style)
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

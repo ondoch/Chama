@@ -44,11 +44,6 @@ class Tab2(QFrame):
         self.widget_4 = NextOfKin()
         self.widget_5 = Uploads()
 
-        self.widget_1.next_btn.clicked.connect(self.residentialInfo)
-        self.widget_2.next_btn.clicked.connect(self.employmentInfo)
-        self.widget_3.next_btn.clicked.connect(self.nextOfKin)
-        self.widget_4.next_btn.clicked.connect(self.uploads)
-
         self.widget_5.previous_btn.clicked.connect(self.nextOfKin)
         self.widget_4.previous_btn.clicked.connect(self.employmentInfo)
         self.widget_3.previous_btn.clicked.connect(self.residentialInfo)

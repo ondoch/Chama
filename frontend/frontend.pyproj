@@ -63,6 +63,7 @@
     <Compile Include="components\date_widget.py" />
     <Compile Include="frontend.py" />
     <Compile Include="modals\chama_information.py" />
+    <Compile Include="modals\employee_information.py" />
     <Compile Include="modals\members_information.py" />
     <Compile Include="modals\member_summary.py" />
     <Compile Include="modals\__init__.py" />

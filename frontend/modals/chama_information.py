@@ -1,4 +1,8 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QMessageBox
+from PyQt5.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QMessageBox
+)
 from widgets.chama_widget import AddChama
 
 

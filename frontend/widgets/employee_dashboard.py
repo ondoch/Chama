@@ -24,6 +24,7 @@ from components.form_dropdown import FormDropdown
 from components.members_table import MembersTable
 from components.pagination import Pagination
 from components.banner_4 import Banner4
+from modals.employee_information import EmployeeInformation
 
 class EmployeeDashboard(QFrame):
     def __init__(self):
@@ -61,10 +62,11 @@ class EmployeeDashboard(QFrame):
         header_widget_layout.addWidget(icon)
         header_widget_layout.addLayout(header_layout)
 
-        self.add_chama_button = QPushButton("+ Add Employee")
-        self.add_chama_button.setObjectName("add_chama_button")
-        self.add_chama_button.setCursor(Qt.PointingHandCursor)
-        self.add_chama_button.setFixedHeight(38)
+        self.add_employee_button = QPushButton("+ Add Employee")
+        self.add_employee_button.setObjectName("add_chama_button")
+        self.add_employee_button.setCursor(Qt.PointingHandCursor)
+        self.add_employee_button.setFixedHeight(38)
+        self.add_employee_button.clicked.connect(self.openAddEmployee)
 
         top_row_widget = QWidget()
         top_row_layout = QHBoxLayout(top_row_widget)
@@ -72,7 +74,7 @@ class EmployeeDashboard(QFrame):
 
         top_row_layout.addWidget(header_widget, alignment=Qt.AlignLeft)
         top_row_layout.addStretch()
-        top_row_layout.addWidget(self.add_chama_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
+        top_row_layout.addWidget(self.add_employee_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
 
         banner_layout = QHBoxLayout()
         banner_layout.setSpacing(12)
@@ -126,6 +128,10 @@ class EmployeeDashboard(QFrame):
         container_widget_layout.addWidget(footer, alignment=Qt.AlignBottom)
 
         main_layout.addWidget(container_widget)
+
+    def openAddEmployee(self):
+        dialog = EmployeeInformation(self)
+        dialog.exec()
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

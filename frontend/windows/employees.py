@@ -13,7 +13,6 @@ class EmployeeWindow(QWidget):
     def initUI(self):
         layout = QHBoxLayout(self)
 
-        widget_1 = AddEmployee()
-        widget_2 = EmployeeDashboard()
+        widget = EmployeeDashboard()
 
-        layout.addWidget(widget_2)
+        layout.addWidget(widget)
