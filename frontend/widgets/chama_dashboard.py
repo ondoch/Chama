@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from PyQt5.QtWidgets import (
     QFrame,
     QLabel,
@@ -7,7 +6,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QPushButton,
-    QDialog
+    QDialog,
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
@@ -19,8 +18,7 @@ from components.style_constants import (
     COLOR_BORDER,
     COLOR_SIDEBAR_BG,
     COLOR_SIDEBAR_HOVER,
-    COLOR_SIDEBAR_SELECT
-
+    COLOR_SIDEBAR_SELECT,
 )
 from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
@@ -29,7 +27,9 @@ from components.pagination import Pagination
 from components.banner_4 import Banner4
 from modals.chama_information import ChamaInformation
 
+
 class ChamaDashboard(QFrame):
+
     def __init__(self):
         super().__init__()
         self.chamas = []
@@ -55,7 +55,9 @@ class ChamaDashboard(QFrame):
         icon = QLabel()
         icon.setFixedSize(50, 50)
         pixmap = QPixmap("resources/group_1.svg")
-        icon.setPixmap(pixmap.scaled(49, 49, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        icon.setPixmap(
+            pixmap.scaled(49, 49, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
 
         header = QLabel("Groups")
         header.setObjectName("header")
@@ -79,7 +81,9 @@ class ChamaDashboard(QFrame):
 
         top_row_layout.addWidget(header_widget, alignment=Qt.AlignLeft)
         top_row_layout.addStretch()
-        top_row_layout.addWidget(self.add_chama_button, alignment=Qt.AlignRight | Qt.AlignVCenter)
+        top_row_layout.addWidget(
+            self.add_chama_button, alignment=Qt.AlignRight | Qt.AlignVCenter
+        )
 
         banner_layout = QHBoxLayout()
         banner_layout.setSpacing(12)
@@ -94,10 +98,16 @@ class ChamaDashboard(QFrame):
             "resources/people.svg", "0", "Members", "Across all"
         )
         self.banner_pending = Banner4(
-            "resources/inactive_users.svg", "0", "Pending Approvals", "Waiting for confirmation"
+            "resources/inactive_users.svg",
+            "0",
+            "Pending Approvals",
+            "Waiting for confirmation",
         )
         self.banner_officials = Banner4(
-            "resources/leader_1.svg", "0", "Chama Officials", "Across all chamas"
+            "resources/leader_1.svg",
+            "0",
+            "Chama Officials",
+            "Across all chamas",
         )
 
         banner_layout.addWidget(self.banner_total_chamas, stretch=1)
@@ -107,9 +117,11 @@ class ChamaDashboard(QFrame):
 
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
-        search = SearchInput("Search...")
 
-        search_widget_layout.addWidget(search, alignment=Qt.AlignLeft)
+        self.search = SearchInput("Search...")
+        self.search.textChanged.connect(self.filterChamas)
+
+        search_widget_layout.addWidget(self.search, alignment=Qt.AlignLeft)
 
         container_widget_layout.addWidget(top_row_widget)
         container_widget_layout.addLayout(banner_layout)
@@ -123,6 +135,23 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addWidget(footer, alignment=Qt.AlignBottom)
 
         main_layout.addWidget(container_widget)
+
+    def filterChamas(self, text=""):
+        query = text.strip().lower()
+
+        if not query:
+            filtered = self.chamas
+        else:
+            filtered = [
+                c
+                for c in self.chamas
+                if query in str(c.get("name", "")).lower()
+                or query in str(c.get("description", "")).lower()
+                or query in str(c.get("registration_number", "")).lower()
+                or query in str(c.get("status", "")).lower()
+            ]
+
+        self.table.populate(filtered)
 
     def openAddChamaDialog(self):
         dialog = ChamaInformation(self)
@@ -146,29 +175,29 @@ class ChamaDashboard(QFrame):
             "pending_approvals": 0,
         }
         self.chamas.append(row)
-        self.table.populate(self.chamas)
+
+        self.filterChamas(self.search.entry.text())
         self.updateBanners()
 
     def removeChama(self, index):
         if 0 <= index < len(self.chamas):
             del self.chamas[index]
-            self.table.populate(self.chamas)
+            self.filterChamas(self.search.entry.text())
             self.updateBanners()
 
     def updateBanners(self):
         total_chamas = len(self.chamas)
-        active_chamas = sum(1 for c in self.chamas if c.get("status") == "Active")
+        active_chamas = sum(
+            1 for c in self.chamas if c.get("status") == "Active"
+        )
         total_members = sum(c.get("member_count", 0) for c in self.chamas)
         total_officials = sum(c.get("officials_count", 0) for c in self.chamas)
         total_pending = sum(c.get("pending_approvals", 0) for c in self.chamas)
 
         self.banner_total_chamas.setHeader(total_chamas)
         self.banner_total_chamas.setSubHeader2(f"{active_chamas} Active")
-
         self.banner_members.setHeader(total_members)
-
         self.banner_pending.setHeader(total_pending)
-
         self.banner_officials.setHeader(total_officials)
 
     @staticmethod
