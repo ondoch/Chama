@@ -39,10 +39,10 @@ class Tab2(QFrame):
         widgets_row.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
         widgets_row.setSpacing(5)
 
-        widget1 = Widget3()
-        widget2 = Widget4()
-        widgets_row.addWidget(widget1)
-        widgets_row.addWidget(widget2)
+        self.widget_1 = Widget3()
+        self.widget_2 = Widget4()
+        widgets_row.addWidget(self.widget_1)
+        widgets_row.addWidget(self.widget_2)
 
         container_layout.addLayout(widgets_row)
 

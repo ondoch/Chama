@@ -23,7 +23,7 @@ class AddEmployee(QFrame):
     def initUI(self):
 
         outer_vertical = QVBoxLayout(self)
-        outer_vertical.setContentsMargins(0,0,0,0)
+        outer_vertical.setContentsMargins(0, 0, 0, 0)
 
         content = QWidget()
         content.setFixedWidth(self.CONTENT_WIDTH)
@@ -38,9 +38,8 @@ class AddEmployee(QFrame):
         self.tab_2 = Tab2()
         self.tab_3 = Tab3()
 
-        self.tab_1.employee_info.next_button.clicked.connect(self.employeeInformation)
         self.tab_2.previous_btn.clicked.connect(self.rolesPermissions)
-        self.tab_2.next_btn.clicked.connect(self.chamaAssignments)
+        #self.tab_2.next_btn.clicked.connect(self.chamaAssignments)
         self.tab_3.previous_btn.clicked.connect(self.employeeInformation)
 
         self.stack.addWidget(self.tab_1)

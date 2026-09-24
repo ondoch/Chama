@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt
 from components.style_constants import COLOR_BORDER
 from components.header import Header
 from components.checkbox import CheckBox
+
 class Container_1(QFrame):
     def __init__(self):
         super().__init__()
@@ -24,16 +25,16 @@ class Container_1(QFrame):
         container_layout.setSpacing(0)
 
         header = Header("Chama Management")
-        create_chama = CheckBox("Create Chama")
-        view_chama = CheckBox("View Chama Details")
-        update_chama = CheckBox("Update Chama Information")
-        chama_settings = CheckBox("Configure Chama Settings")
+        self.create_chama = CheckBox("Create Chama")
+        self.view_chama = CheckBox("View Chama Details")
+        self.update_chama = CheckBox("Update Chama Information")
+        self.chama_settings = CheckBox("Configure Chama Settings")
 
         container_layout.addWidget(header)
-        container_layout.addWidget(create_chama)
-        container_layout.addWidget(view_chama)
-        container_layout.addWidget(update_chama)
-        container_layout.addWidget(chama_settings)
+        container_layout.addWidget(self.create_chama)
+        container_layout.addWidget(self.view_chama)
+        container_layout.addWidget(self.update_chama)
+        container_layout.addWidget(self.chama_settings)
 
         main_layout.addWidget(container)
         self.setLayout(main_layout)

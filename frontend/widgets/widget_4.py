@@ -23,13 +23,13 @@ class Widget4(QFrame):
         container_layout = QVBoxLayout(container_widget)
         container_layout.setAlignment(Qt.AlignCenter)
 
-        chama_management = Container_1()
-        member_management = Container_2()
-        system_access = Container_3()
+        self.chama_management = Container_1()
+        self.member_management = Container_2()
+        self.system_access = Container_3()
 
-        container_layout.addWidget(chama_management)
-        container_layout.addWidget(member_management)
-        container_layout.addWidget(system_access)
+        container_layout.addWidget(self.chama_management)
+        container_layout.addWidget(self.member_management)
+        container_layout.addWidget(self.system_access)
 
         main_layout.addWidget(container_widget)
 

@@ -24,14 +24,14 @@ class Container_3(QFrame):
         container_layout.setSpacing(0)
 
         header = Header("System Access")
-        view_reports = CheckBox("View Reports")
-        view_audits = CheckBox("View Audits")
-        manage_employees = CheckBox("Manage Employees")
+        self.view_reports = CheckBox("View Reports")
+        self.view_audits = CheckBox("View Audits")
+        self.manage_employees = CheckBox("Manage Employees")
 
         container_layout.addWidget(header)
-        container_layout.addWidget(view_reports)
-        container_layout.addWidget(view_audits)
-        container_layout.addWidget(manage_employees)
+        container_layout.addWidget(self.view_reports)
+        container_layout.addWidget(self.view_audits)
+        container_layout.addWidget(self.manage_employees)
 
         main_layout.addWidget(container)
         self.setLayout(main_layout)

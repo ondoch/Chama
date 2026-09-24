@@ -18,7 +18,6 @@ from components.style_constants import (
     COLOR_BORDER
 )
 
-
 class CheckStatement(QFrame):
     def __init__(self, header, description):
         super().__init__()
@@ -67,6 +66,9 @@ class CheckStatement(QFrame):
         container_layout.addLayout(description_layout, 1)
 
         main_layout.addWidget(container_widget)
+
+    def returnValue(self):
+        return self.check_box.isChecked()
 
     def setStylesheet(self):
         self.setStyleSheet(f"""
