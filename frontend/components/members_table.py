@@ -7,7 +7,6 @@ from components.status_badge import StatusBadge
 from components.action_buttons import ActionButtonGroup
 from components.style_constants import FONT_FAMILY, COLOR_TEXT_PRIMARY
 
-
 def make_avatar_cell(value, row_data):
     container = QWidget()
     layout = QHBoxLayout(container)
@@ -25,16 +24,13 @@ def make_avatar_cell(value, row_data):
     layout.addStretch()
     return container
 
-
 def make_status_cell(value, row_data):
     return StatusBadge(value or "inactive")
-
 
 def actions_factory(actions_config):
     def factory(value, row_data):
         return ActionButtonGroup(actions_config, row_data=row_data)
     return factory
-
 
 GROUP_COLUMNS = [
     {"header": "Employee", "key": "name", "factory": make_avatar_cell},
@@ -43,7 +39,7 @@ GROUP_COLUMNS = [
     {"header": "Status", "key": "status", "factory": make_status_cell},
     {"header": "Actions", "key": None, "width": 110,
      "factory": actions_factory([
-         {"label": "View", "width": 60, "callback": lambda row: print("View", row)},
+         {"label": "View", "width": 60, "callback": lambda row, btn: print("View", row)},
      ])},
 ]
 

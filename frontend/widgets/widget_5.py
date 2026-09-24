@@ -18,20 +18,26 @@ from components.style_constants import COLOR_BORDER, FONT_FAMILY, COLOR_TEXT_MUT
 
 class Widget5(QFrame):
 
-    ROLE_OPTIONS = ["Member", "Treasurer", "Chair", "Secretary"]
+    ROLE_OPTIONS = ["Treasurer", "Chair", "Secretary"]
 
     def __init__(self):
         super().__init__()
+        self.all_chamas = [
+            {"name": "Mwangaza Women Chama", "members": 32, "status": "Active", "selected": False, "role": None},
+            {"name": "Tumaini Group", "members": 18, "status": "Onboarding", "selected": False, "role": None},
+            {"name": "Upendo Chama", "members": 5, "status": "Active", "selected": False, "role": None},
+        ]
+
         self.initUI()
         self.setStylesheet()
 
     def initUI(self):
         main_layout = QHBoxLayout()
-        main_layout.setContentsMargins(0,0,0,0)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         container = QWidget()
         container.setObjectName("container")
         container_layout = QVBoxLayout(container)
-        container_layout.setContentsMargins(0,0,0,0)
+        container_layout.setContentsMargins(0, 0, 0, 0)
 
         banner = Banner(
             "resources/chama.svg",
@@ -56,8 +62,14 @@ class Widget5(QFrame):
         header_1 = QLabel("Available Chamas")
         header_1.setObjectName("header_1")
 
-        table_1 = CustomTable([
-            {"header": "", "type": "checkbox", "key": "selected", "width": 40},
+        self.table_1 = CustomTable([
+            {
+                "header": "",
+                "type": "checkbox",
+                "key": "selected",
+                "width": 40,
+                "on_toggle": self.on_chama_toggled,
+            },
             {"header": "Chama Name", "type": "text", "key": "name"},
             {"header": "Members", "type": "text", "key": "members", "center": True},
             {
@@ -66,11 +78,6 @@ class Widget5(QFrame):
                 "factory": lambda value, row: StatusBadge(value),
             },
         ])
-        table_1.populate([
-            {"name": "Mwangaza Women Chama", "members": 32, "status": "Active"},
-            {"name": "Tumaini Group", "members": 18, "status": "Onboarding"},
-            {"name": "Upendo Chama", "members": 5, "status": "Active"},
-        ])
 
         header_2 = QLabel("Role in Chamas")
         header_2.setObjectName("header_2")
@@ -78,7 +85,7 @@ class Widget5(QFrame):
         sub_header = QLabel("Define what this employee will do in each assigned chama")
         sub_header.setObjectName("sub_header")
 
-        table_2 = CustomTable([
+        self.table_2 = CustomTable([
             {"header": "Chama Name", "type": "text", "key": "name"},
             {
                 "header": "Role in chama",
@@ -89,42 +96,67 @@ class Widget5(QFrame):
                 "header": "Actions",
                 "type": "actions",
                 "actions": [
-                    ("Edit", self.edit_member),
                     ("Remove", self.remove_member),
                 ],
             },
-        ])
-        table_2.populate([
-            {"name": "Mwangaza Women Chama", "role": "Treasurer"},
-            {"name": "Tumaini Group", "role": "Member"},
-            {"name": "Upendo Chama", "role": "Member"},
         ])
 
         container_layout.addWidget(banner, alignment=Qt.AlignLeft)
         container_layout.addWidget(search_container)
         container_layout.addWidget(header_1)
-        container_layout.addWidget(table_1)
+        container_layout.addWidget(self.table_1)
         container_layout.addWidget(header_2)
         container_layout.addWidget(sub_header)
-        container_layout.addWidget(table_2)
+        container_layout.addWidget(self.table_2)
         main_layout.addWidget(container)
 
         self.setLayout(main_layout)
 
-  
+        self._refresh_tables()
+
+    def on_chama_toggled(self, row_data, checked):
+        row_data["selected"] = checked
+        self._refresh_tables()
+
+    def _refresh_tables(self):
+        available = [c for c in self.all_chamas if not c["selected"]]
+        assigned = [c for c in self.all_chamas if c["selected"]]
+        self.table_1.populate(available)
+        self.table_2.populate(assigned)
+
     def _make_role_dropdown(self, value, row):
         dropdown = FormDropdown(placeholder="Select role", items=self.ROLE_OPTIONS, height=30)
         if value:
             index = dropdown.findText(value)
             if index >= 0:
                 dropdown.setCurrentIndex(index)
+        dropdown.currentTextChanged.connect(
+            lambda text, row=row: self._on_role_changed(row, text)
+        )
         return dropdown
+
+    def _on_role_changed(self, row, role):
+        name = row.get("name")
+        for chama in self.all_chamas:
+            if chama["name"] == name:
+                chama["role"] = role
+                break
 
     def edit_member(self, row):
         print("edit", row)
 
     def remove_member(self, row):
-        print("remove", row)
+        name = row.get("name")
+        for chama in self.all_chamas:
+            if chama["name"] == name:
+                chama["selected"] = False
+                chama["role"] = None
+                break
+
+        self._refresh_tables()
+
+    def getChamaCount(self):
+        return len([c for c in self.all_chamas if c["selected"]])
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

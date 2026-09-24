@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import (
     QComboBox
 )
 
-
 class FormDropdown(QComboBox):
     def __init__(self, placeholder, items=None, height=None, icon_path="resources/down_arrow.svg"):
         super().__init__()
@@ -63,3 +62,8 @@ class FormDropdown(QComboBox):
                 padding-left: 8px;
             }}
         """)
+
+    def returnValue(self):
+        if self.currentIndex() <= 0:
+            return None
+        return self.currentText()

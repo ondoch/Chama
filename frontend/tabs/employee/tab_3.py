@@ -51,8 +51,8 @@ class Tab3(QFrame):
         self.previous_btn.clicked.connect(self.previous_clicked.emit)
         self.finish_btn.clicked.connect(self.finish_clicked.emit)
 
-        widget_1 = Widget5()
-        container_1_layout.addWidget(widget_1)
+        self.widget_1 = Widget5()
+        container_1_layout.addWidget(self.widget_1)
 
         navigation_layout.addWidget(self.previous_btn)
         navigation_layout.addStretch()

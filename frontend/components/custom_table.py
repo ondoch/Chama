@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
-
 class CustomTable(QWidget):
     def __init__(self, columns: list):
         super().__init__()
@@ -113,13 +112,17 @@ class CustomTable(QWidget):
             }}
         """)
 
-    def _make_checkbox_cell(self, checked=False):
+    def _make_checkbox_cell(self, checked=False, on_toggle=None, row_data=None):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setAlignment(Qt.AlignCenter)
         checkbox = QCheckBox()
         checkbox.setChecked(bool(checked))
+        if on_toggle:
+            checkbox.stateChanged.connect(
+                lambda state, r=row_data: on_toggle(r, state == Qt.Checked)
+            )
         layout.addWidget(checkbox)
         return container
 
@@ -152,7 +155,14 @@ class CustomTable(QWidget):
                 self.table.setCellWidget(row, i, factory(value, row_data))
 
             elif col_type == "checkbox":
-                self.table.setCellWidget(row, i, self._make_checkbox_cell(value))
+                self.table.setCellWidget(
+                    row, i,
+                    self._make_checkbox_cell(
+                        value,
+                        on_toggle=col.get("on_toggle"),
+                        row_data=row_data,
+                    ),
+                )
 
             elif col_type == "actions":
                 self.table.setCellWidget(

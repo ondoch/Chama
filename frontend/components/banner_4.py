@@ -55,18 +55,19 @@ class Banner4(QWidget):
         info_layout = QVBoxLayout()
         info_layout.setSpacing(2)
 
-        header = QLabel(self.header)
-        header.setObjectName("header")
-        sub_header_1 = QLabel(self.sub_header_1)
-        sub_header_1.setObjectName("sub_header_1")
+        self.header_label = QLabel(str(self.header))
+        self.header_label.setObjectName("header")
+        self.sub_header_1_label = QLabel(str(self.sub_header_1))
+        self.sub_header_1_label.setObjectName("sub_header_1")
 
-        info_layout.addWidget(header, alignment=Qt.AlignLeft)
-        info_layout.addWidget(sub_header_1, alignment=Qt.AlignLeft)
+        info_layout.addWidget(self.header_label, alignment=Qt.AlignLeft)
+        info_layout.addWidget(self.sub_header_1_label, alignment=Qt.AlignLeft)
 
+        self.sub_header_2_label = None
         if self.sub_header_2:
-            sub_header_2 = QLabel(self.sub_header_2)
-            sub_header_2.setObjectName("sub_header_2")
-            info_layout.addWidget(sub_header_2, alignment=Qt.AlignLeft)
+            self.sub_header_2_label = QLabel(str(self.sub_header_2))
+            self.sub_header_2_label.setObjectName("sub_header_2")
+            info_layout.addWidget(self.sub_header_2_label, alignment=Qt.AlignLeft)
 
         container_widget_layout.addWidget(icon_wrapper, alignment=Qt.AlignVCenter)
         container_widget_layout.addLayout(info_layout)
@@ -74,6 +75,21 @@ class Banner4(QWidget):
         container_widget_layout.addStretch()
 
         main_layout.addWidget(container_widget)
+
+    def setHeader(self, value):
+        self.header = str(value)
+        self.header_label.setText(self.header)
+
+    def setSubHeader1(self, value):
+        self.sub_header_1 = str(value)
+        self.sub_header_1_label.setText(self.sub_header_1)
+
+    def setSubHeader2(self, value):
+        self.sub_header_2 = str(value)
+        if self.sub_header_2_label is not None:
+            self.sub_header_2_label.setText(self.sub_header_2)
+        else:
+            pass
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

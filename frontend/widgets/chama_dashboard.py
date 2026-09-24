@@ -35,6 +35,7 @@ class ChamaDashboard(QFrame):
         self.chamas = []
         self.initUI()
         self.setStylesheet()
+        self.updateBanners()
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
@@ -54,7 +55,7 @@ class ChamaDashboard(QFrame):
         icon = QLabel()
         icon.setFixedSize(50, 50)
         pixmap = QPixmap("resources/group_1.svg")
-        icon.setPixmap(pixmap.scaled(49,49, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        icon.setPixmap(pixmap.scaled(49, 49, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
         header = QLabel("Groups")
         header.setObjectName("header")
@@ -86,15 +87,23 @@ class ChamaDashboard(QFrame):
         left, top, right, bottom = banner_layout.getContentsMargins()
         banner_layout.setContentsMargins(left, 10, right, bottom)
 
-        banner_1 = Banner4("resources/chamas.svg", "12", "Total Chamas", "3 Active")
-        banner_2 = Banner4("resources/people.svg", "248", "Members", "Across all")
-        banner_3 = Banner4("resources/inactive_users.svg", "4", "Pending Approvals", "Waiting for confirmation")
-        banner_4 = Banner4("resources/leader_1.svg", "8", "Chama Officials", "Across all chamas")
+        self.banner_total_chamas = Banner4(
+            "resources/chamas.svg", "0", "Total Chamas", "0 Active"
+        )
+        self.banner_members = Banner4(
+            "resources/people.svg", "0", "Members", "Across all"
+        )
+        self.banner_pending = Banner4(
+            "resources/inactive_users.svg", "0", "Pending Approvals", "Waiting for confirmation"
+        )
+        self.banner_officials = Banner4(
+            "resources/leader_1.svg", "0", "Chama Officials", "Across all chamas"
+        )
 
-        banner_layout.addWidget(banner_1, stretch=1)
-        banner_layout.addWidget(banner_2, stretch=1)
-        banner_layout.addWidget(banner_3, stretch=1)
-        banner_layout.addWidget(banner_4, stretch=1)
+        banner_layout.addWidget(self.banner_total_chamas, stretch=1)
+        banner_layout.addWidget(self.banner_members, stretch=1)
+        banner_layout.addWidget(self.banner_pending, stretch=1)
+        banner_layout.addWidget(self.banner_officials, stretch=1)
 
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
@@ -123,12 +132,44 @@ class ChamaDashboard(QFrame):
     def addChama(self, values):
         row = {
             "name": values.get("chama_name", ""),
-            "member_count": "0 members",
+            "description": values.get("description", ""),
             "contribution": f"KSh {values.get('contribution', '0')}",
+            "pool_percentage": values.get("pool_percentage", ""),
+            "registration_number": values.get("registration_number", ""),
+            "meeting_frequency": values.get("meeting_frequency", ""),
+            "share_percentage": values.get("share_percentage", ""),
+            "loan_percentage": values.get("loan_percentage", ""),
             "created_on": self.formattedToday(),
+            "status": "Active",
+            "member_count": 0,
+            "officials_count": 0,
+            "pending_approvals": 0,
         }
         self.chamas.append(row)
         self.table.populate(self.chamas)
+        self.updateBanners()
+
+    def removeChama(self, index):
+        if 0 <= index < len(self.chamas):
+            del self.chamas[index]
+            self.table.populate(self.chamas)
+            self.updateBanners()
+
+    def updateBanners(self):
+        total_chamas = len(self.chamas)
+        active_chamas = sum(1 for c in self.chamas if c.get("status") == "Active")
+        total_members = sum(c.get("member_count", 0) for c in self.chamas)
+        total_officials = sum(c.get("officials_count", 0) for c in self.chamas)
+        total_pending = sum(c.get("pending_approvals", 0) for c in self.chamas)
+
+        self.banner_total_chamas.setHeader(total_chamas)
+        self.banner_total_chamas.setSubHeader2(f"{active_chamas} Active")
+
+        self.banner_members.setHeader(total_members)
+
+        self.banner_pending.setHeader(total_pending)
+
+        self.banner_officials.setHeader(total_officials)
 
     @staticmethod
     def formattedToday():

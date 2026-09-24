@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
-    QPushButton
+    QPushButton,
+    QDialog
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
@@ -29,8 +30,10 @@ from modals.employee_information import EmployeeInformation
 class EmployeeDashboard(QFrame):
     def __init__(self):
         super().__init__()
+        self.employees = []
         self.initUI()
         self.setStylesheet()
+        self.updateBanners()
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
@@ -82,15 +85,15 @@ class EmployeeDashboard(QFrame):
         left, top, right, bottom = banner_layout.getContentsMargins()
         banner_layout.setContentsMargins(left, 10, right, bottom)
 
-        banner_1 = Banner4("resources/employees_1.svg", "12", "Employees")
-        banner_2 = Banner4("resources/active_users.svg", "8", "Active employees")
-        banner_3 = Banner4("resources/inactive_users.svg", "4", "Inactive employees")
-        banner_4 = Banner4("resources/manage.svg", "20", "Managed chamas")
+        self.banner_total = Banner4("resources/employees_1.svg", "0", "Employees")
+        self.banner_active = Banner4("resources/active_users.svg", "0", "Active employees")
+        self.banner_inactive = Banner4("resources/inactive_users.svg", "0", "Inactive employees")
+        self.banner_managed_chamas = Banner4("resources/manage.svg", "0", "Managed chamas")
 
-        banner_layout.addWidget(banner_1, stretch=1)
-        banner_layout.addWidget(banner_2, stretch=1)
-        banner_layout.addWidget(banner_3, stretch=1)
-        banner_layout.addWidget(banner_4, stretch=1)
+        banner_layout.addWidget(self.banner_total, stretch=1)
+        banner_layout.addWidget(self.banner_active, stretch=1)
+        banner_layout.addWidget(self.banner_inactive, stretch=1)
+        banner_layout.addWidget(self.banner_managed_chamas, stretch=1)
 
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
@@ -110,18 +113,7 @@ class EmployeeDashboard(QFrame):
         container_widget_layout.addWidget(search_widget)
 
         self.table = MembersTable()
-        self.table.populate([
-            {"name": "Evans Deya", "role": "Facilitator",
-             "chamas_managed": "8", "status": "Active"},
-             {"name": "Esther Nduta", "role": "Facilitator",
-             "chamas_managed": "1", "status": "Inactive"},
-             {"name": "Marya Prude", "role": "Facilitator",
-             "chamas_managed": "5", "status": "Active"},
-             {"name": "George Waweru", "role": "Facilitator",
-             "chamas_managed": "2", "status": "Inactive"},
-             {"name": "Emanuel Kisiangani", "role": "Facilitator",
-             "chamas_managed": "10", "status": "Onboarding"},
-        ])
+        self.table.populate(self.employees)
         container_widget_layout.addWidget(self.table)
 
         footer = Pagination()
@@ -131,7 +123,40 @@ class EmployeeDashboard(QFrame):
 
     def openAddEmployee(self):
         dialog = EmployeeInformation(self)
-        dialog.exec()
+        if dialog.exec() == QDialog.Accepted:
+            self.employees.append(dialog.employee_data)
+            self.table.populate(self.employees)
+            self.updateBanners()
+
+    def removeEmployee(self, index):
+        if 0 <= index < len(self.employees):
+            del self.employees[index]
+            self.table.populate(self.employees)
+            self.updateBanners()
+
+    def updateBanners(self):
+        total_employees = len(self.employees)
+
+        active_employees = sum(
+            1 for e in self.employees
+            if str(e.get("status", "Active")).lower() == "active"
+        )
+        inactive_employees = sum(
+            1 for e in self.employees
+            if str(e.get("status", "")).lower() == "inactive"
+        )
+
+        total_managed_chamas = 0
+        for e in self.employees:
+            try:
+                total_managed_chamas += int(e.get("chamas_managed", 0))
+            except (TypeError, ValueError):
+                pass
+
+        self.banner_total.setHeader(total_employees)
+        self.banner_active.setHeader(active_employees)
+        self.banner_inactive.setHeader(inactive_employees)
+        self.banner_managed_chamas.setHeader(total_managed_chamas)
 
     def setStylesheet(self):
         self.setStyleSheet(f"""
