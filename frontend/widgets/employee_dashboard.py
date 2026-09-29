@@ -112,7 +112,6 @@ class EmployeeDashboard(QFrame):
         search_widget = QWidget()
         search_widget_layout = QHBoxLayout(search_widget)
 
-        # Store references to search input and dropdown
         self.search = SearchInput("Search...")
         self.status_dropdown = FormDropdown(
             "All",
@@ -120,11 +119,8 @@ class EmployeeDashboard(QFrame):
             height=40,
             icon_path="resources/down_arrow.svg",
         )
-
-        # Connect signals to trigger re-filtering
         self.search.textChanged.connect(self.applyFilters)
 
-        # Handle dropdown signal (QComboBox uses currentIndexChanged or currentTextChanged)
         if hasattr(self.status_dropdown, "currentTextChanged"):
             self.status_dropdown.currentTextChanged.connect(self.applyFilters)
         elif hasattr(self.status_dropdown, "combo"):
@@ -151,10 +147,8 @@ class EmployeeDashboard(QFrame):
         main_layout.addWidget(container_widget)
 
     def applyFilters(self):
-        """Combines search query and dropdown selection to filter self.employees."""
         query = self.search.entry.text().strip().lower()
 
-        # Get current selected text from dropdown
         if hasattr(self.status_dropdown, "currentText"):
             selected_status = self.status_dropdown.currentText()
         elif hasattr(self.status_dropdown, "combo"):
@@ -164,14 +158,12 @@ class EmployeeDashboard(QFrame):
 
         filtered = []
         for emp in self.employees:
-            # Check dropdown status matching
             emp_status = str(emp.get("status", "")).strip()
             status_match = (
                 selected_status == "All"
                 or emp_status.lower() == selected_status.lower()
             )
 
-            # Check search query across name, email, role, phone, etc.
             text_fields = [
                 str(emp.get("name", "")),
                 str(emp.get("first_name", "")),
