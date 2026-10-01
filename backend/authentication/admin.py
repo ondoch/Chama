@@ -14,6 +14,7 @@ class UserAdmin(BaseUserAdmin):
             "Permissions",
             {
                 "fields": (
+                    "must_change_password",
                     "is_active",
                     "is_staff",
                     "is_superuser",

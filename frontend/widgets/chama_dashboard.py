@@ -27,7 +27,6 @@ from components.pagination import Pagination
 from components.banner_4 import Banner4
 from modals.chama_information import ChamaInformation
 
-
 class ChamaDashboard(QFrame):
 
     def __init__(self):
