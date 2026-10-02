@@ -1,13 +1,10 @@
 from PyQt5.QtWidgets import (
-    QWidget,
-    QStackedWidget,
-    QVBoxLayout,
-    QHBoxLayout
+    QWidget, QStackedWidget, QVBoxLayout, QHBoxLayout
 )
+from PyQt5.QtCore import pyqtSignal
 
 from components.side_bar import Sidebar
 from components.top_bar import TopBar
-
 from windows.dashboard import DashboardWindow
 from windows.chamas import ChamasWindow
 from windows.employees import EmployeeWindow
@@ -18,11 +15,17 @@ from windows.audit_logs import AuditLogWindow
 
 
 class MainWindow(QWidget):
-    def __init__(self):
+    logged_out = pyqtSignal()
+
+    def __init__(self, api):
         super().__init__()
+        self.api = api   # shared client created by the controller
+
+        # Initialize Layout
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
+
         container_widget = QWidget()
         container_widget_layout = QVBoxLayout(container_widget)
         container_widget_layout.setContentsMargins(0, 0, 0, 0)
@@ -31,14 +34,13 @@ class MainWindow(QWidget):
         side_bar = Sidebar()
 
         self.stacked_widget = QStackedWidget()
-
         self.stacked_widget.addWidget(DashboardWindow())     # 0 - Dashboard
-        self.stacked_widget.addWidget(ChamasWindow())         # 1 - Chamas
-        self.stacked_widget.addWidget(EmployeeWindow())       # 2 - Employees
-        self.stacked_widget.addWidget(OnboardingWindow())     # 3 - Onboarding
-        self.stacked_widget.addWidget(AssignmentsWindow())    # 4 - Assignments
-        self.stacked_widget.addWidget(ReportsWindow())        # 5 - Reports
-        self.stacked_widget.addWidget(AuditLogWindow())       # 6 - Audit logs
+        self.stacked_widget.addWidget(ChamasWindow())        # 1 - Chamas
+        self.stacked_widget.addWidget(EmployeeWindow())      # 2 - Employees
+        self.stacked_widget.addWidget(OnboardingWindow())    # 3 - Onboarding
+        self.stacked_widget.addWidget(AssignmentsWindow())   # 4 - Assignments
+        self.stacked_widget.addWidget(ReportsWindow())       # 5 - Reports
+        self.stacked_widget.addWidget(AuditLogWindow())      # 6 - Audit logs
 
         container_widget_layout.addWidget(top_bar)
         container_widget_layout.addWidget(self.stacked_widget)
@@ -52,4 +54,7 @@ class MainWindow(QWidget):
         layout.addWidget(container_widget)
 
     def handle_logout(self) -> None:
-        print("Log out clicked")
+        # Clear stored tokens if your client supports it (the dev client has a no-op logout)
+        if hasattr(self.api, "logout"):
+            self.api.logout()
+        self.logged_out.emit()

@@ -58,6 +58,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# CORS Configuration
+CORS_ALLOW_ALL_ORIGINS = True  # For local development
+
+# Alternatively, specify allowed origins explicitly:
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+
+# Allow custom headers (such as Authorization for SimpleJWT)
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

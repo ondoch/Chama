@@ -20,7 +20,13 @@ class AccessControl(models.Model):
         ]
 
 class AuditLog(models.Model):
-    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="audit_logs"
+    )
     actor_email = models.CharField(max_length=254)
     action = models.CharField(max_length=100)
     target_id = models.PositiveIntegerField(

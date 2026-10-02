@@ -12,7 +12,7 @@ class Banner(QFrame):
 
         self.icon_path = icon_path
         self.title = title
-        self.sub_title = title
+        self.sub_title = sub_title
 
         self.initUI()
         self.setStylesheet()

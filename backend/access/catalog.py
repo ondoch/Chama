@@ -11,10 +11,10 @@ PERMISSIONS = [
 
     ("view_reports", "View reports", "System access", ["access.view_reports"]),
     ("view_audits", "View audits", "System access", ["access.view_audits"]),
-    ("manage_employees", "Manage employees", "System access", ["employee.View_employee", "employee.add_employee", "employee.change_employee", "employee.delete_employee"]),
+    ("manage_employees", "Manage employees", "System access", ["employee.view_employee", "employee.add_employee", "employee.change_employee", "employee.delete_employee"]),
 ]
 
-ALL_PERMISSIONS_KEYS = [p[0] for p in PERMISSIONS]
+ALL_PERMISSION_KEYS = [p[0] for p in PERMISSIONS]
 
 ROLES = [
     ("chama_facilitator", "Chama Facilitator",
@@ -24,7 +24,7 @@ ROLES = [
     ("finance_support", "Finance Support",
      ["view_chama_details", "view_members", "view_reports"]),
     ("super_admin", "Super Admin",
-     ALL_PERMISSIONS_KEYS),
+     ALL_PERMISSION_KEYS),
 ]
 
 PERMISSION_BY_KEY = {key: {"key": key, "label": label, "group": group, "django": django}

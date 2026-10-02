@@ -35,11 +35,22 @@ class Employee(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.employee_ID:
-            last_employee = Employee.objects.order_by('-id').first()
+            last_employee = (
+                Employee.objects
+                .exclude(employee_ID__isnull=True)
+                .exclude(employee_ID="")
+                .order_by("-id")
+                .first()
+            )
+
             if last_employee:
-                last_id = int(last_employee.employee_ID.split('-')[-1])
-                new_id = f"EMP-{last_id + 1:04d}"
+                try:
+                    last_id = int(last_employee.employee_ID.split("-")[-1])
+                except (ValueError, AttributeError):
+                    last_id = 0
             else:
-                new_id = "EMP-0001"
-            self.employee_ID = new_id
+                last_id = 0
+
+            self.employee_ID = f"EMP-{last_id + 1:04d}"
+
         super().save(*args, **kwargs)

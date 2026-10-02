@@ -1,36 +1,38 @@
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
 
 from .models import Employee
-from .serializers import EmployeeSerializer
-from .permissions import EmployeePermission
+from .serializers import EmployeeSerializer, SelfProfileSerializer
 
-class EmployeeViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
-    queryset = Employee.objects.all()
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.select_related('user').all().order_by('-id')
     serializer_class = EmployeeSerializer
-    permission_classes = [EmployeePermission]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['employee_ID', 'user__email', 'user__first_name', 'user__last_name']
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        user = self.request.user
-        if not user.is_superuser:
-            queryset = queryset.filter(user=user)
+        status_param = self.request.query_params.get('status')
+        if status_param is not None:
+            is_active = status_param.lower() in ['true', '1']
+            queryset = queryset.filter(status=is_active)
         return queryset
 
-    @action(detail=False, methods=['get'], url_path='stats')
-    def stats(self, request):
-        total_employees = Employee.objects.count()
-        active_employees = Employee.objects.filter(status='active').count()
-        inactive_employees = Employee.objects.filter(status='inactive').count()
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[permissions.IsAuthenticated])
+    def me(self, request):
+        try:
+            employee = request.user.employee
+        except Employee.DoesNotExist:
+            return Response({"detail": "Employee profile not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        data = {
-            'total_employees': total_employees,
-            'active_employees': active_employees,
-            'inactive_employees': inactive_employees,
-        }
-        return Response(data, status=status.HTTP_200_OK)
+        if request.method == 'GET':
+            serializer = self.get_serializer(employee)
+            return Response(serializer.data)
+
+        elif request.method == 'PATCH':
+            serializer = SelfProfileSerializer(request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        
