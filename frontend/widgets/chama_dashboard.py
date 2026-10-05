@@ -7,10 +7,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QPushButton,
     QDialog,
+    QMessageBox,
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 
+from api.api_client import ApiWorker
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
     COLOR_TEXT_MUTED,
@@ -27,14 +29,62 @@ from components.pagination import Pagination
 from components.banner_4 import Banner4
 from modals.chama_information import ChamaInformation
 
-class ChamaDashboard(QFrame):
+def format_date(iso):
+    if not iso:
+        return ""
+    try:
+        dt = datetime.fromisoformat(str(iso).replace("Z", "+00:00"))
+        return f"{dt.strftime('%B')} {dt.day}, {dt.year}"
+    except ValueError:
+        return str(iso)[:10]
 
-    def __init__(self):
+
+def clean_number(value):
+    return str(value).replace("KSh", "").replace("%", "").replace(",", "").strip()
+
+
+def normalize_chama(c):
+    return {
+        "public_id": c.get("public_id"),
+        "name": c.get("chama_name", ""),
+        "description": c.get("description", ""),
+        "contribution": f"KSh {c.get('contribution', '0')}",
+        "pool_percentage": c.get("pool_percentage", ""),
+        "registration_number": c.get("registration_number", ""),
+        "meeting_frequency": c.get("meeting_frequency", ""),
+        "share_percentage": c.get("share_percentage", ""),
+        "loan_percentage": c.get("loan_percentage", ""),
+        "created_on": format_date(c.get("created_at")),
+        "status": str(c.get("status", "")).title(),
+        "member_count": c.get("member_count", 0),
+        "officials_count": 0,
+        "pending_approvals": 0,
+        "raw": c,
+    }
+
+
+def form_to_payload(values):
+    return {
+        "chama_name": values["chama_name"],
+        "description": values["description"],
+        "registration_number": values["registration_number"],
+        "meeting_frequency": values["meeting_frequency"],
+        "contribution": clean_number(values["contribution"]),
+        "share_percentage": clean_number(values["share_percentage"]),
+        "pool_percentage": clean_number(values["pool_percentage"]),
+        "loan_percentage": clean_number(values["loan_percentage"]),
+    }
+
+class ChamaDashboard(QFrame):
+    def __init__(self, api_client):
         super().__init__()
+        self.api = api_client
         self.chamas = []
+        self._workers = set()
         self.initUI()
         self.setStylesheet()
         self.updateBanners()
+        self.loadChamas()
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
@@ -127,6 +177,8 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addWidget(search_widget)
 
         self.table = GroupsTable()
+        self.table.edit_requested.connect(self.editChama)
+        self.table.close_requested.connect(self.closeChama)
 
         container_widget_layout.addWidget(self.table)
 
@@ -134,6 +186,29 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addWidget(footer, alignment=Qt.AlignBottom)
 
         main_layout.addWidget(container_widget)
+
+    def runWorker(self, fn, on_success, on_error=None, *args, **kwargs):
+        worker = ApiWorker(fn, *args, **kwargs)
+        self._workers.add(worker)
+        worker.success.connect(on_success)
+        worker.error.connect(on_error or self.showError)
+        worker.finished.connect(lambda w=worker: self._workers.discard(w))
+        worker.start()
+
+    def showError(self, message):
+        QMessageBox.warning(self, "Error", message)
+
+    def loadChamas(self):
+        self.runWorker(self.api.list_chamas, self.onChamasLoaded)
+
+    def onChamasLoaded(self, data):
+        if isinstance(data, dict):
+            results = data.get("results", [])
+        else:
+            results = data or []
+        self.chamas = [normalize_chama(c) for c in results]
+        self.filterChamas(self.search.entry.text())
+        self.updateBanners()
 
     def filterChamas(self, text=""):
         query = text.strip().lower()
@@ -155,34 +230,60 @@ class ChamaDashboard(QFrame):
     def openAddChamaDialog(self):
         dialog = ChamaInformation(self)
         if dialog.exec_() == QDialog.Accepted:
-            self.addChama(dialog.values)
+            self.createChama(dialog.values)
 
-    def addChama(self, values):
-        row = {
-            "name": values.get("chama_name", ""),
-            "description": values.get("description", ""),
-            "contribution": f"KSh {values.get('contribution', '0')}",
-            "pool_percentage": values.get("pool_percentage", ""),
-            "registration_number": values.get("registration_number", ""),
-            "meeting_frequency": values.get("meeting_frequency", ""),
-            "share_percentage": values.get("share_percentage", ""),
-            "loan_percentage": values.get("loan_percentage", ""),
-            "created_on": self.formattedToday(),
-            "status": "Active",
-            "member_count": 0,
-            "officials_count": 0,
-            "pending_approvals": 0,
-        }
-        self.chamas.append(row)
+    def createChama(self, values):
+        self.add_chama_button.setEnabled(False)
+        self.runWorker(
+            self.api.create_chama,
+            self.onChamaCreated,
+            self.onCreateFailed,
+            form_to_payload(values),
+        )
 
+    def onChamaCreated(self, data):
+        self.add_chama_button.setEnabled(True)
+        self.chamas.insert(0, normalize_chama(data))
         self.filterChamas(self.search.entry.text())
         self.updateBanners()
 
-    def removeChama(self, index):
-        if 0 <= index < len(self.chamas):
-            del self.chamas[index]
-            self.filterChamas(self.search.entry.text())
-            self.updateBanners()
+    def onCreateFailed(self, message):
+        self.add_chama_button.setEnabled(True)
+        self.showError(message)
+
+    def editChama(self, row):
+        dialog = ChamaInformation(self, chama=row.get("raw") or {})
+        if dialog.exec_() != QDialog.Accepted:
+            return
+        self.runWorker(
+            self.api.update_chama,
+            self.onChamaUpdated,
+            None,
+            row["public_id"],
+            form_to_payload(dialog.values),
+        )
+
+    def onChamaUpdated(self, data):
+        updated = normalize_chama(data)
+        for i, c in enumerate(self.chamas):
+            if c["public_id"] == updated["public_id"]:
+                self.chamas[i] = updated
+                break
+        self.filterChamas(self.search.entry.text())
+        self.updateBanners()
+
+    def changeStatus(self, row, new_status, reason=""):
+        self.runWorker(
+            self.api.set_chama_status,
+            self.onChamaUpdated,
+            None,
+            row["public_id"],
+            new_status,
+            reason,
+        )
+
+    def closeChama(self, row):
+        self.changeStatus(row, "closed", "Closed from desktop app")
 
     def updateBanners(self):
         total_chamas = len(self.chamas)
@@ -198,11 +299,6 @@ class ChamaDashboard(QFrame):
         self.banner_members.setHeader(total_members)
         self.banner_pending.setHeader(total_pending)
         self.banner_officials.setHeader(total_officials)
-
-    @staticmethod
-    def formattedToday():
-        now = datetime.now()
-        return f"{now.strftime('%B')} {now.day}, {now.year}"
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

@@ -7,35 +7,44 @@ class ContextMenu(QFrame):
     def __init__(self, parent=None, row_data=None):
         super().__init__(parent, Qt.Popup | Qt.FramelessWindowHint)
         self.row_data = row_data
+        self.is_closed = (
+            str((row_data or {}).get("status", "")).lower() == "closed"
+        )
         self.initUI()
+
+    def _divider(self):
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        return line
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(8, 8, 8, 8)
         main_layout.setSpacing(2)
 
+        edit = QPushButton("Edit")
+        edit.clicked.connect(self._on_edit)
+
         add_member = QPushButton("Add member")
         add_member.clicked.connect(self._on_add_member)
-
-        line = QFrame()
-        line.setFrameShape(QFrame.HLine)
-        line.setFrameShadow(QFrame.Sunken)
 
         set_officials = QPushButton("Set officials")
         set_officials.clicked.connect(self._on_set_officials)
 
-        line2 = QFrame()
-        line2.setFrameShape(QFrame.HLine)
-        line2.setFrameShadow(QFrame.Sunken)
+        close_group = QPushButton("Close group")
+        close_group.clicked.connect(self._on_delete)
 
-        delete = QPushButton("Delete")
-        delete.clicked.connect(self._on_delete)
+        if self.is_closed:
+            for btn in (edit, add_member, set_officials, close_group):
+                btn.setEnabled(False)
 
+        main_layout.addWidget(edit)
+        main_layout.addWidget(self._divider())
         main_layout.addWidget(add_member)
-        main_layout.addWidget(line)
         main_layout.addWidget(set_officials)
-        main_layout.addWidget(line2)
-        main_layout.addWidget(delete)
+        main_layout.addWidget(self._divider())
+        main_layout.addWidget(close_group)
 
         self.setStyleSheet("""
             QFrame {
@@ -63,12 +72,22 @@ class ContextMenu(QFrame):
                 background-color: #E5E7EB;
             }
 
+            QPushButton:disabled {
+                color: #9CA3AF;
+            }
+
             QFrame[frameShape="4"] {
                 color: #E5E7EB;
                 max-height: 1px;
             }
         """)
         self.setFixedWidth(180)
+
+    def _on_edit(self):
+        self.close()
+        parent = self.parent()
+        if parent is not None and hasattr(parent, "openEditDialog"):
+            parent.openEditDialog(self.row_data)
 
     def _on_add_member(self):
         self.close()

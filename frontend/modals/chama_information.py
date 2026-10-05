@@ -6,10 +6,21 @@ from PyQt5.QtWidgets import (
 from widgets.chama_widget import AddChama
 
 
+def _set_field(field, value):
+    value = "" if value is None else str(value)
+    for name in ("setValue", "setText", "setCurrentText"):
+        if hasattr(field, name):
+            getattr(field, name)(value)
+            return
+    inner = getattr(field, "entry", None)
+    if inner is not None and hasattr(inner, "setText"):
+        inner.setText(value)
+
+
 class ChamaInformation(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, chama=None):
         super().__init__(parent)
-        self.setWindowTitle("Add Chama")
+        self.setWindowTitle("Edit Chama" if chama else "Add Chama")
         self.setModal(True)
 
         self.values = {}
@@ -20,6 +31,20 @@ class ChamaInformation(QDialog):
         self.chama_info.cancel_clicked.connect(self.reject)
 
         self.chama_info.tab_1.next_clicked.connect(self.saveValues)
+
+        if chama:
+            self.prefill(chama)
+
+    def prefill(self, chama):
+        tab_1 = self.chama_info.tab_1
+        _set_field(tab_1.chama_name, chama.get("chama_name"))
+        _set_field(tab_1.description, chama.get("description"))
+        _set_field(tab_1.contribution, chama.get("contribution"))
+        _set_field(tab_1.pool_percentage, chama.get("pool_percentage"))
+        _set_field(tab_1.registration_number, chama.get("registration_number"))
+        _set_field(tab_1.meeting_frequency, chama.get("meeting_frequency"))
+        _set_field(tab_1.share_percentage, chama.get("share_percentage"))
+        _set_field(tab_1.loan_percentage, chama.get("loan_percentage"))
 
     def saveValues(self):
         tab_1 = self.chama_info.tab_1

@@ -44,7 +44,11 @@ INSTALLED_APPS = [
 
     'access',
     'authentication',
+    'chama',
     'employee',
+    'assignment',
+    'member',
+    'official',
 ]
 
 MIDDLEWARE = [

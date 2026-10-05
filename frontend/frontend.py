@@ -1,8 +1,6 @@
 import sys
 import time
-
 from PyQt5.QtWidgets import QApplication
-
 from windows.log_in import LoginWindow
 from windows.main_window import MainWindow
 
@@ -10,7 +8,6 @@ from windows.main_window import MainWindow
 DEV_MODE = False
 DEV_SKIP_LOGIN = True
 # -----------------------------------------------------------------------------
-
 
 if DEV_MODE:
 
@@ -26,7 +23,8 @@ if DEV_MODE:
                     "email": email,
                     "first_name": "Dev",
                     "last_name": "User",
-                    "is_staff": True
+                    "is_staff": True,
+                    "roles": [["administrator"]],
                 }
 
             raise Exception("Invalid email or password.")
@@ -49,16 +47,19 @@ class AppController:
     def start(self):
 
         if DEV_MODE and DEV_SKIP_LOGIN:
-            self.show_main()
+            # Fallback dummy data for dev mode
+            dev_user = {
+                "first_name": "Dev",
+                "last_name": "User",
+                "roles": [["administrator"]],
+            }
+            self.show_main(user_data=dev_user)
         else:
             self.show_login()
 
     def show_login(self):
         self.login_window = LoginWindow(self.api)
-        self.login_window.login_successful.connect(
-            self.on_login_successful
-        )
-
+        self.login_window.login_successful.connect(self.on_login_successful)
         self.login_window.show()
 
     def on_login_successful(self, user_data):
@@ -69,7 +70,8 @@ class AppController:
         print("[DEBUG] About to open MainWindow...")
 
         try:
-            self.show_main()
+            # FIX: Pass user_data to show_main
+            self.show_main(user_data=user_data)
             print("[DEBUG] MainWindow opened successfully")
 
         except Exception as e:
@@ -79,13 +81,14 @@ class AppController:
             traceback.print_exc()
             print("=======================================\n")
 
-    def show_main(self):
+    def show_main(self, user_data=None):
 
         print("[DEBUG] Entered show_main()")
 
         print("[DEBUG] Creating MainWindow...")
 
-        self.main_window = MainWindow(self.api)
+        # FIX: Pass user_data into MainWindow
+        self.main_window = MainWindow(self.api, user_data=user_data)
 
         print("[DEBUG] MainWindow object created")
 
@@ -93,9 +96,7 @@ class AppController:
 
         print("[DEBUG] Connecting logged_out signal...")
 
-        self.main_window.logged_out.connect(
-            self.on_logged_out
-        )
+        self.main_window.logged_out.connect(self.on_logged_out)
 
         print("[DEBUG] Showing MainWindow...")
 
@@ -120,6 +121,7 @@ class AppController:
             self.main_window = None
 
         self.show_login()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

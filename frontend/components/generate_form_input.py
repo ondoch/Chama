@@ -100,6 +100,16 @@ class GenerateFormInput(QFrame):
         text = self.label.text().strip()
         return text == "" or text == self.placeholder
 
+    def setValue(self, text):
+        text = "" if text is None else str(text).strip()
+        if not text:
+            return
+        self.value = text
+        self.label.setText(text)
+        self.generate_btn.setEnabled(False)
+        self.generate_btn.setCursor(Qt.ArrowCursor)
+        self.setError(False)
+
     def setError(self, has_error):
         self._has_error = has_error
         self.setStylesheet()

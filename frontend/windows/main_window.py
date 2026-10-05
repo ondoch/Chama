@@ -17,11 +17,11 @@ from windows.audit_logs import AuditLogWindow
 class MainWindow(QWidget):
     logged_out = pyqtSignal()
 
-    def __init__(self, api):
+    def __init__(self, api, user_data=None):
         super().__init__()
-        self.api = api   # shared client created by the controller
+        self.api = api
+        self.user_data = user_data or {}
 
-        # Initialize Layout
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -30,19 +30,22 @@ class MainWindow(QWidget):
         container_widget_layout = QVBoxLayout(container_widget)
         container_widget_layout.setContentsMargins(0, 0, 0, 0)
 
-        top_bar = TopBar()
+        self.top_bar = TopBar()
+        if self.user_data:
+            self.top_bar.update_user(self.user_data)
+
         side_bar = Sidebar()
 
         self.stacked_widget = QStackedWidget()
         self.stacked_widget.addWidget(DashboardWindow())     # 0 - Dashboard
-        self.stacked_widget.addWidget(ChamasWindow())        # 1 - Chamas
-        self.stacked_widget.addWidget(EmployeeWindow())      # 2 - Employees
+        self.stacked_widget.addWidget(ChamasWindow(self.api))        # 1 - Chamas
+        self.stacked_widget.addWidget(EmployeeWindow(api=self.api))  # 2 - Employees
         self.stacked_widget.addWidget(OnboardingWindow())    # 3 - Onboarding
         self.stacked_widget.addWidget(AssignmentsWindow())   # 4 - Assignments
         self.stacked_widget.addWidget(ReportsWindow())       # 5 - Reports
         self.stacked_widget.addWidget(AuditLogWindow())      # 6 - Audit logs
 
-        container_widget_layout.addWidget(top_bar)
+        container_widget_layout.addWidget(self.top_bar)
         container_widget_layout.addWidget(self.stacked_widget)
 
         side_bar.menu_index_selected.connect(self.stacked_widget.setCurrentIndex)
@@ -54,7 +57,6 @@ class MainWindow(QWidget):
         layout.addWidget(container_widget)
 
     def handle_logout(self) -> None:
-        # Clear stored tokens if your client supports it (the dev client has a no-op logout)
         if hasattr(self.api, "logout"):
             self.api.logout()
         self.logged_out.emit()

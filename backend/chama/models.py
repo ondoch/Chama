@@ -5,6 +5,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Chama(models.Model):
+    class Status(models.TextChoices):
+        ONBOARDING = "onboarding", "Onboarding"
+        ACTIVE = "active", "Active"
+        SUSPENDED = "suspended", "Suspended"
+        CLOSED = "closed", "Closed"
 
     public_id = models.UUIDField(
         db_index=True,
@@ -52,6 +57,9 @@ class Chama(models.Model):
             MaxValueValidator(100)
         ]
     )
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.ONBOARDING)
+    created_by = models.ForeignKey("employee.Employee", null=True, blank=True, on_delete=models.SET_NULL,
+                                   related_name="created_chamas")
 
     def __str__(self):
         return self.chama_name

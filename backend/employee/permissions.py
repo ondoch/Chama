@@ -3,7 +3,10 @@ from rest_framework.exceptions import PermissionDenied
 
 from access.services import can_manage
 
+
 class EmployeePermission(BasePermission):
+    message = "You do not have permission to perform this action."
+
     action_permissions = {
         "list": "employee.view_employee",
         "create": "employee.add_employee",
@@ -19,12 +22,18 @@ class EmployeePermission(BasePermission):
     def has_permission(self, request, view):
         if not (request.user and request.user.is_authenticated):
             return False
-        perm = self.action_perms.get(view.action)
+        perm = self.action_permissions.get(view.action)
         return request.user.has_perm(perm) if perm else True
 
     def has_object_permission(self, request, view, obj):
         if view.action == "retrieve":
-            return obj.user_id == request.user.id or request.user.has_perm("employee.view_employee")
+            return (
+                obj.user_id == request.user.id
+                or request.user.has_perm("employee.view_employee")
+            )
         if view.action in self.guarded_actions and not can_manage(request.user, obj.user):
-            raise PermissionDenied("You cannot change someone who has more access than you.")
+            raise PermissionDenied(
+                "You cannot change someone who has more access than you."
+            )
         return True
+    

@@ -73,6 +73,9 @@ class FormInput(QFrame):
     def isEmpty(self):
         return not self.entry.text().strip()
 
+    def setValue(self, text):
+        self.entry.setText("" if text is None else str(text))
+
     def setError(self, has_error):
         self._has_error = has_error
         self.setStylesheet()

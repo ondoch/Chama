@@ -1,22 +1,12 @@
-from PyQt5.QtWidgets import (QFrame,
-                             QWidget,
-                             QHBoxLayout,
-                             QVBoxLayout,
-                             QPushButton,
-                             QGraphicsDropShadowEffect,
-                             QLabel,
-                             QGridLayout)
-from PyQt5.QtGui import (QFont,
-                         QIcon,
-                         QColor,
-                         QPixmap,
-                         QPainter,
-                         QPainterPath)
+from PyQt5.QtWidgets import (QFrame, QWidget, QHBoxLayout, QVBoxLayout, 
+                             QPushButton, QGraphicsDropShadowEffect, 
+                             QLabel, QGridLayout)
+from PyQt5.QtGui import QFont, QIcon, QColor, QPixmap, QPainter, QPainterPath
 from PyQt5.QtCore import Qt, QSize
 
 
 class TopBar(QFrame):
-    def __init__(self, user_name="Joshua Mochama", user_role="Administrator",
+    def __init__(self, user_name="User", user_role="Member",
                  avatar_path="resources/avatar.jpeg", notification_count=3):
         super().__init__()
 
@@ -32,7 +22,6 @@ class TopBar(QFrame):
     def initUI(self):
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(15, 0, 15, 0)
-
         main_layout.addStretch()
 
         container_widget = QWidget()
@@ -40,6 +29,7 @@ class TopBar(QFrame):
         container_widget_layout.setContentsMargins(0, 0, 0, 0)
         container_widget_layout.setSpacing(15)
 
+        # Bell notification container
         bell_container = QWidget()
         bell_container.setFixedSize(36, 36)
         bell_grid = QGridLayout(bell_container)
@@ -61,6 +51,7 @@ class TopBar(QFrame):
         bell_grid.addWidget(self.bell_button, 0, 0)
         bell_grid.addWidget(self.badge, 0, 0, alignment=Qt.AlignTop | Qt.AlignRight)
 
+        # Profile widget
         profile_widget = QWidget()
         profile_widget.setObjectName("profile_widget")
         profile_layout = QHBoxLayout(profile_widget)
@@ -77,15 +68,17 @@ class TopBar(QFrame):
         text_layout.setSpacing(0)
         text_layout.setAlignment(Qt.AlignVCenter)
 
-        name_label = QLabel(self.user_name)
-        name_label.setObjectName("user_name")
-        name_label.setAlignment(Qt.AlignVCenter)
-        role_label = QLabel(self.user_role)
-        role_label.setObjectName("user_role")
-        role_label.setAlignment(Qt.AlignVCenter)
+        # Standardized self attributes for dynamic label updates
+        self.name_label = QLabel(self.user_name)
+        self.name_label.setObjectName("user_name")
+        self.name_label.setAlignment(Qt.AlignVCenter)
 
-        text_layout.addWidget(name_label)
-        text_layout.addWidget(role_label)
+        self.role_label = QLabel(self.user_role)
+        self.role_label.setObjectName("user_role")
+        self.role_label.setAlignment(Qt.AlignVCenter)
+
+        text_layout.addWidget(self.name_label)
+        text_layout.addWidget(self.role_label)
 
         profile_layout.addWidget(self.avatar_label, alignment=Qt.AlignVCenter)
         profile_layout.addLayout(text_layout)
@@ -103,6 +96,38 @@ class TopBar(QFrame):
         self.setGraphicsEffect(shadow)
 
         self.setstylesheet()
+
+    def update_user(self, user_data):
+        """Parse user dict from API and update UI text labels."""
+        if not user_data or not isinstance(user_data, dict):
+            return
+
+        # 1. Format user name
+        first_name = user_data.get("first_name", "")
+        last_name = user_data.get("last_name", "")
+        full_name = f"{first_name} {last_name}".strip() or user_data.get("email", "User")
+
+        # 2. Extract primary role from nested lists or staff status
+        role_title = "Member"
+        raw_roles = user_data.get("roles", [])
+
+        # Flatten nested list e.g. [[], ['manage_employees']] -> ['manage_employees']
+        flat_roles = []
+        if isinstance(raw_roles, list):
+            for item in raw_roles:
+                if isinstance(item, list):
+                    flat_roles.extend(item)
+                elif isinstance(item, str):
+                    flat_roles.append(item)
+
+        if flat_roles:
+            role_title = flat_roles[0].replace("_", " ").title()
+        elif user_data.get("is_staff"):
+            role_title = "Administrator"
+
+        # 3. Apply updates to PyQt Labels
+        self.name_label.setText(full_name)
+        self.role_label.setText(role_title)
 
     def circularPixmap(self, path, size):
         source = QPixmap(path)

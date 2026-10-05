@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 from components.custom_table import CustomTable
 from components.avatar import Avatar
@@ -43,6 +43,9 @@ def _actions_factory(actions_config):
 
 
 class GroupsTable(CustomTable):
+    edit_requested = pyqtSignal(dict)
+    close_requested = pyqtSignal(dict)
+
     def __init__(self):
         columns = [
             {"header": "Group name", "key": "name", "factory": _make_avatar_cell},
@@ -61,6 +64,10 @@ class GroupsTable(CustomTable):
 
     def openContextMenu(self, row, button=None):
         ContextMenu.show_at_button(button, parent=self, row_data=row)
+
+    def openEditDialog(self, row):
+        if row:
+            self.edit_requested.emit(row)
 
     def openAddMemberDialog(self, row):
         dialog = MemberInformation(parent=self)
@@ -90,14 +97,11 @@ class GroupsTable(CustomTable):
 
         confirm = QMessageBox(self)
         confirm.setIcon(QMessageBox.Warning)
-        confirm.setWindowTitle("Delete group")
-        confirm.setText(f'Delete "{name}"?')
-        confirm.setInformativeText("This action cannot be undone.")
+        confirm.setWindowTitle("Close group")
+        confirm.setText(f'Close "{name}"?')
+        confirm.setInformativeText("A closed group can no longer be edited or reopened.")
         confirm.setStandardButtons(QMessageBox.Cancel | QMessageBox.Yes)
         confirm.setDefaultButton(QMessageBox.Cancel)
 
         if confirm.exec_() == QMessageBox.Yes:
-            self._delete_group(row)
-
-    def _delete_group(self, row):
-        print("Deleting", row)
+            self.close_requested.emit(row)

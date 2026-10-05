@@ -1,18 +1,26 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QVBoxLayout,
     QMessageBox,
     QDialog
 )
+
+from api.api_client import CreateEmployeeWorker
 from widgets.employee_widget import AddEmployee
 
+def _slug(label):
+    return label.strip().lower().replace(" & ", "_and_").replace(" ", "_")
+
 class EmployeeInformation(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, api_client, parent=None):
         super().__init__(parent)
+        self.api_client = api_client
         self.setWindowTitle("Add Employee")
         self.setModal(True)
 
         self.values = {}
-        self.employee_data = {}
+        self.created_employee = {}
+        self.create_worker = None
 
         layout = QVBoxLayout(self)
         self.add_employee = AddEmployee()
@@ -48,7 +56,6 @@ class EmployeeInformation(QDialog):
             "job title": employee_info.job_title,
             "last name": employee_info.last_name,
             "phone number": employee_info.phone_number,
-            "employee ID": employee_info.employee_id,
             "employment date": employee_info.employment_date,
         }
 
@@ -62,7 +69,6 @@ class EmployeeInformation(QDialog):
             "job title": employee_info.job_title.returnValue(),
             "last name": employee_info.last_name.returnValue(),
             "phone number": employee_info.phone_number.returnValue(),
-            "employee ID": employee_info.employee_id.returnValue(),
             "employment date": employee_info.employment_date.returnValue(),
             "status": "Active" if employee_info.toggle.isChecked() else "Inactive",
         }
@@ -99,19 +105,81 @@ class EmployeeInformation(QDialog):
             },
         }
 
-    def saveValues(self):
-        personal = self.values.get("Personal Information", {})
-        first_name = personal.get("first name", "")
-        last_name = personal.get("last name", "")
-        job_title = personal.get("job title", "")
-        status = personal.get("status", "Inactive")
+    def _status_value(self, label):
+        return label == "Active"
 
-        self.employee_data = {
-            "name": f"{first_name} {last_name}".strip(),
-            "role": job_title,
-            "chamas_managed": str(self.add_employee.tab_3.widget_1.getChamaCount()),
-            "status": status,
+    def _build_payload(self):
+        personal = self.values.get("Personal Information", {})
+        rp = self.values.get("Roles and Permissions", {})
+
+        roles = [
+            _slug(label)
+            for label, enabled in rp.get("Roles & Permissions", {}).items()
+            if enabled
+        ]
+
+        permissions = [
+            _slug(label)
+            for group, items in rp.items()
+            if group != "Roles & Permissions"
+            for label, enabled in items.items()
+            if enabled
+        ]
+
+        return {
+            "first_name": personal.get("first name", ""),
+            "last_name": personal.get("last name", ""),
+            "email": personal.get("email address", ""),
+            "phone_number": personal.get("phone number", ""),
+            "national_ID": personal.get("national id", ""),
+            "job_title": personal.get("job title", ""),
+            "employment_date": personal.get("employment date", ""),
+            "status": self._status_value(personal.get("status", "Active")),
+            "roles": roles,
+            "permissions": permissions,
         }
 
-        print(self.values)
+    def saveValues(self):
+        if "Personal Information" not in self.values:
+            QMessageBox.warning(
+                self,
+                "Missing Information",
+                "Please complete the personal information step first."
+            )
+            return
+
+        self.saveRolesandPermissions()
+        payload = self._build_payload()
+
+        self.add_employee.tab_3.finish_btn.setEnabled(False)
+
+        self.create_worker = CreateEmployeeWorker(self.api_client, payload)
+        self.create_worker.success.connect(self._on_created)
+        self.create_worker.error.connect(self._on_create_error)
+        self.create_worker.start()
+
+    def _on_created(self, result):
+        self.created_employee = result
+
+        temp_password = result.get("temporary_password")
+        if temp_password:
+            box = QMessageBox(self)
+            box.setIcon(QMessageBox.Information)
+            box.setWindowTitle("Employee Created")
+            box.setText(
+                f"Temporary password:\n\n{temp_password}\n\n"
+                "Copy it now. It will not be shown again."
+            )
+            box.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            box.exec()
+
         self.accept()
+
+    def _on_create_error(self, message):
+        self.add_employee.tab_3.finish_btn.setEnabled(True)
+        QMessageBox.critical(self, "Could not create employee", message)
+
+    def reject(self):
+        if self.create_worker is not None and self.create_worker.isRunning():
+            return
+        super().reject()
