@@ -45,6 +45,7 @@ def _actions_factory(actions_config):
 class GroupsTable(CustomTable):
     edit_requested = pyqtSignal(dict)
     close_requested = pyqtSignal(dict)
+    add_member_requested = pyqtSignal(dict, dict)  # (chama row, dialog values)
 
     def __init__(self):
         columns = [
@@ -70,8 +71,11 @@ class GroupsTable(CustomTable):
             self.edit_requested.emit(row)
 
     def openAddMemberDialog(self, row):
+        if not row:
+            return
         dialog = MemberInformation(parent=self)
-        dialog.exec_()
+        if dialog.exec_() == QDialog.Accepted:
+            self.add_member_requested.emit(row, dialog.values)
 
     def openMemberSummaryDialog(self, row):
         dialog = MemberSummaryDialog(parent=self, members=row.get("members") if row else None)

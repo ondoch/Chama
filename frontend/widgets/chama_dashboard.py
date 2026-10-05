@@ -29,6 +29,7 @@ from components.pagination import Pagination
 from components.banner_4 import Banner4
 from modals.chama_information import ChamaInformation
 
+
 def format_date(iso):
     if not iso:
         return ""
@@ -74,6 +75,48 @@ def form_to_payload(values):
         "pool_percentage": clean_number(values["pool_percentage"]),
         "loan_percentage": clean_number(values["loan_percentage"]),
     }
+
+
+def member_to_payload(values):
+    """Maps the MemberInformation dialog values to the MemberSerializer fields."""
+    personal = values.get("Personal details", {})
+    residence = values.get("Residential information", {})
+    employment = values.get("Employment information", {})
+    kin = values.get("Next of kin information", {})
+
+    payload = {
+        "full_name": personal.get("full name"),
+        "date_of_birth": personal.get("date of birth"),
+        "phone": personal.get("phone number"),
+        "email": personal.get("email address"),
+        "gender": personal.get("gender"),
+        "marital_status": personal.get("marital status"),
+        "nationality": personal.get("nationality"),
+        "national_id": personal.get("national ID"),
+        "kra_pin": personal.get("pin"),
+
+        "country": residence.get("country of residence"),
+        "county": residence.get("county of residence"),
+        "town": residence.get("town/city of residence"),
+        "estate": residence.get("estate"),
+        "physical_address": residence.get("physical address"),
+        "postal_address": residence.get("postal address"),
+        "postal_code": residence.get("postal code"),
+
+        "employment_status": employment.get("employment status"),
+        "employer_name": employment.get("employment/Business name"),
+        "occupation": employment.get("occupation/job title"),
+        "employer_address": employment.get("employer/business address"),
+        "source_of_income": employment.get("source of income"),
+
+        "kin_full_name": kin.get("full name"),
+        "kin_relationship": kin.get("relationship"),
+        "kin_phone": kin.get("phone number"),
+        "kin_address": kin.get("physical address"),
+    }
+    # Drop empty values so optional fields don't fail validation
+    return {k: v for k, v in payload.items() if v not in (None, "")}
+
 
 class ChamaDashboard(QFrame):
     def __init__(self, api_client):
@@ -179,6 +222,7 @@ class ChamaDashboard(QFrame):
         self.table = GroupsTable()
         self.table.edit_requested.connect(self.editChama)
         self.table.close_requested.connect(self.closeChama)
+        self.table.add_member_requested.connect(self.addMember)
 
         container_widget_layout.addWidget(self.table)
 
@@ -284,6 +328,22 @@ class ChamaDashboard(QFrame):
 
     def closeChama(self, row):
         self.changeStatus(row, "closed", "Closed from desktop app")
+
+    def addMember(self, row, values):
+        self.runWorker(
+            self.api.create_member,
+            self.onMemberAdded,
+            None,
+            row["public_id"],
+            member_to_payload(values),
+        )
+
+    def onMemberAdded(self, data):
+        name = (data or {}).get("full_name", "Member")
+        QMessageBox.information(
+            self, "Member added", f"{name} was added successfully."
+        )
+        self.loadChamas()  # refresh member counts in the table and banners
 
     def updateBanners(self):
         total_chamas = len(self.chamas)

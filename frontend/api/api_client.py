@@ -1,7 +1,6 @@
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
-
 class ApiError(Exception):
     def __init__(self, message, status_code=None, payload=None):
         super().__init__(message)
@@ -9,10 +8,8 @@ class ApiError(Exception):
         self.status_code = status_code
         self.payload = payload
 
-
 class AuthExpired(ApiError):
     """Raised when the refresh token is expired or invalid."""
-
 
 def _flatten_errors(data, prefix=""):
     lines = []
@@ -121,6 +118,13 @@ class APIClient:
 
     def chama_stats(self):
         return self.request("GET", "/api/chamas/stats/")
+
+    def list_members(self, chama_id, include_removed=False):
+        params = {"include_removed": "true"} if include_removed else {}
+        return self.request("GET", f"/api/chamas/{chama_id}/members/", params=params)
+
+    def create_member(self, chama_id, payload):
+        return self.request("POST", f"/api/chamas/{chama_id}/members/", json=payload)
 
     def request(self, method, path, **kwargs):
         """Wrapper around send() that handles automatic 401 token refresh."""
@@ -300,7 +304,6 @@ class FetchEmployeesWorker(QThread):
         except Exception as e:
             msg = getattr(e, "message", str(e))
             self.error.emit(msg)
-
 
 class CreateEmployeeWorker(QThread):
     success = pyqtSignal(dict)

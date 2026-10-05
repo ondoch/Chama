@@ -10,9 +10,10 @@ from chama.models import Chama
 from chama.services import ChamaClosed, scoped_chamas
 
 from .permissions import MemberPermission
-from .serializers import MemberSerializer
+from .serializers import SENSITIVE_FIELDS, MemberSerializer
 
 TRUE = ("1", "true", "True")
+AUDITED_FIELDS = ("full_name", "phone", "email", "joined_on", *SENSITIVE_FIELDS)
 
 
 class MemberViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
@@ -22,7 +23,9 @@ class MemberViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retri
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
-        self.chama = get_object_or_404(scoped_chamas(request.user), pk=kwargs["chama_pk"])
+        # Accept either kwarg name; which one you get depends on how the nested URL is declared.
+        key = kwargs.get("chama_public_id") or kwargs.get("chama_pk")
+        self.chama = get_object_or_404(scoped_chamas(request.user), public_id=key)
 
     def get_serializer_context(self):
         return {**super().get_serializer_context(), "chama": self.chama}
@@ -34,19 +37,21 @@ class MemberViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retri
         return qs
 
     def _audit(self, action_name, member, details=None):
-        record_audit(self.request.user, action_name, member.pk, f"{member.full_name} ({self.chama.name})",
-                     {"chama": self.chama.name, **(details or {})})
+        record_audit(self.request.user, action_name, member.pk,
+                     f"{member.full_name} ({self.chama.chama_name})",
+                     {"chama": self.chama.chama_name, **(details or {})})
 
     def perform_create(self, serializer):
         member = serializer.save(chama=self.chama)
         self._audit("member.added", member)
 
     def perform_update(self, serializer):
-        fields = ("full_name", "phone", "email", "joined_on", "national_id")
-        before = {f: str(getattr(serializer.instance, f)) for f in fields}
+        before = {f: str(getattr(serializer.instance, f)) for f in AUDITED_FIELDS}
         member = serializer.save()
-        changes = {f: ("changed" if f == "national_id" else [before[f], str(getattr(member, f))])
-                   for f in fields if before[f] != str(getattr(member, f))}
+        changes = {
+            f: ("changed" if f in SENSITIVE_FIELDS else [before[f], str(getattr(member, f))])
+            for f in AUDITED_FIELDS if before[f] != str(getattr(member, f))
+        }
         if changes:
             self._audit("member.updated", member, changes)
 
@@ -61,3 +66,4 @@ class MemberViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retri
         member.save(update_fields=["is_active", "removed_at"])
         self._audit("member.removed", member)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    

@@ -5,16 +5,29 @@ from chama.services import ChamaClosed
 
 from .models import ChamaMember
 
+DATE_FORMATS = ["iso-8601", "%d/%m/%Y", "%B %d, %Y"]   # last one = the date picker's format
+
+SENSITIVE_FIELDS = (
+    "national_id", "kra_pin", "date_of_birth", "gender", "marital_status", "nationality",
+    "country", "county", "town", "estate", "physical_address", "postal_address", "postal_code",
+    "employment_status", "employer_name", "occupation", "employer_address", "source_of_income",
+    "kin_full_name", "kin_relationship", "kin_phone", "kin_address",
+)
+
 
 class MemberSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
     role_display = serializers.SerializerMethodField()
-    joined_on = serializers.DateField(input_formats=["iso-8601", "%d/%m/%Y"], required=False)
+    joined_on = serializers.DateField(input_formats=DATE_FORMATS, required=False)
+    date_of_birth = serializers.DateField(input_formats=DATE_FORMATS, required=False, allow_null=True)
 
     class Meta:
         model = ChamaMember
-        fields = ["id", "chama", "full_name", "phone", "national_id", "email", "role", "role_display",
-                  "joined_on", "is_active", "removed_at"]
+        fields = [
+            "id", "chama", "full_name", "phone", "email", "role", "role_display",
+            "joined_on", "is_active", "removed_at",
+            *SENSITIVE_FIELDS,
+        ]
         read_only_fields = ["id", "chama", "is_active", "removed_at"]
 
     @staticmethod
@@ -33,7 +46,8 @@ class MemberSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         user = self.context["request"].user
         if not (user.has_perm("access.update_member_information") or user.has_perm("access.add_members")):
-            data.pop("national_id", None)
+            for field in SENSITIVE_FIELDS:
+                data.pop(field, None)
         return data
 
     def validate(self, attrs):
@@ -52,6 +66,6 @@ class MemberSerializer(serializers.ModelSerializer):
         sent_role = str(getattr(self, "initial_data", {}).get("role", "member") or "member").strip().lower()
         if sent_role != "member":
             raise serializers.ValidationError({"role": (
-                f"Offices are appointed separately: POST /api/chamas/{chama.pk}/officials/ "
+                f"Offices are appointed separately: POST /api/chamas/{chama.public_id}/officials/ "
                 f'with {{"member": <id>, "position": "{sent_role}"}}.')})
         return attrs
