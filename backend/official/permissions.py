@@ -7,6 +7,7 @@ class OfficialPermission(BasePermission):
         "retrieve": "access.view_members",
         "create": "access.update_member_information",
         "destroy": "access.update_member_information",
+        "replace_all": "access.update_member_information",
     }
 
     def has_permission(self, request, view):
@@ -16,3 +17,4 @@ class OfficialPermission(BasePermission):
             return True
         perm = self.action_perms.get(view.action)
         return bool(perm) and request.user.has_perm(perm)
+    

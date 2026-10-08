@@ -10,6 +10,7 @@ from authentication.permissions import PasswordUpToDate
 from chama.models import Chama
 from chama.services import ChamaClosed, scoped_chamas
 
+from .models import Official
 from .permissions import OfficialPermission
 from .serializers import OfficialSerializer
 
@@ -24,7 +25,9 @@ class OfficialViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Ret
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)           # login + permissions first
-        self.chama = get_object_or_404(scoped_chamas(request.user), pk=kwargs["chama_pk"])
+        self.chama = get_object_or_404(
+            scoped_chamas(request.user), public_id=kwargs["chama_pk"]
+        )
 
     def get_serializer_context(self):
         replace = self.request.data.get("replace") in (True, "true", "True", "1", 1) if self.request else False
@@ -37,9 +40,10 @@ class OfficialViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Ret
         return qs
 
     def _audit(self, action_name, official, details=None):
+        chama_name = self.chama.chama_name
         record_audit(self.request.user, action_name, official.pk,
-                     f"{official.member.full_name} ({self.chama.name})",
-                     {"chama": self.chama.name, "position": official.position, **(details or {})})
+                     f"{official.member.full_name} ({chama_name})",
+                     {"chama": chama_name, "position": official.position, **(details or {})})
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -62,3 +66,46 @@ class OfficialViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Ret
         official.save(update_fields=["ended_on"])
         self._audit("official.ended", official, {"reason": "term ended"})
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @transaction.atomic
+    def replace_all(self, request, *args, **kwargs):
+        """PUT {"officials": {"chairperson": 3|null, "secretary": 5|null, "treasurer": 8|null}}"""
+        if self.chama.status == Chama.Status.CLOSED:
+            raise ChamaClosed()
+
+        selection = request.data.get("officials")
+        positions = {p.value for p in Official.Position}
+        if not isinstance(selection, dict) or set(selection) != positions:
+            raise ValidationError("Provide all three positions: chairperson, secretary, treasurer.")
+
+        ids = [mid for mid in selection.values() if mid is not None]
+        if len(ids) != len(set(ids)):
+            raise ValidationError("A member can hold only one office.")
+
+        members = {m.id: m for m in self.chama.members.filter(is_active=True, id__in=ids)}
+        if set(ids) - set(members):
+            raise ValidationError("Every official must be an active member of this chama.")
+
+        today = timezone.localdate()
+        current = {o.position: o for o in
+                   self.chama.officials.filter(ended_on__isnull=True).select_related("member")}
+
+        # free every changed seat first, so swaps don't hit the unique constraints
+        for pos, old in current.items():
+            if old.member_id != selection[pos]:
+                old.ended_on = today
+                old.save(update_fields=["ended_on"])
+                self._audit("official.ended", old, {"reason": "replaced"})
+
+        for pos, mid in selection.items():
+            if mid is None or (pos in current and current[pos].member_id == mid):
+                continue
+            official = Official.objects.create(
+                chama=self.chama, member=members[mid], position=pos,
+                appointed_by=request.user,
+            )
+            self._audit("official.appointed", official)
+
+        qs = self.chama.officials.filter(ended_on__isnull=True).select_related("member", "appointed_by")
+        return Response(self.get_serializer(qs, many=True).data)
+    

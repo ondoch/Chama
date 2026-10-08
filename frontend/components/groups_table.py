@@ -45,14 +45,17 @@ def _actions_factory(actions_config):
 class GroupsTable(CustomTable):
     edit_requested = pyqtSignal(dict)
     close_requested = pyqtSignal(dict)
-    add_member_requested = pyqtSignal(dict, dict)  # (chama row, dialog values)
+    add_member_requested = pyqtSignal(dict, dict)
+    officials_saved = pyqtSignal(dict)
 
-    def __init__(self):
+    def __init__(self, api_client=None):
+        self.api_client = api_client
+
         columns = [
             {"header": "Group name", "key": "name", "factory": _make_avatar_cell},
-            {"header": "Members", "key": "member_count"},
-            {"header": "Contribution", "key": "contribution"},
-            {"header": "Created on", "key": "created_on"},
+            {"header": "Members", "key": "member_count", "center":True},
+            {"header": "Contribution", "key": "contribution", "center":True},
+            {"header": "Created on", "key": "created_on", "center":True},
             {"header": "Actions", "key": None, "width": 110,
              "factory": _actions_factory([
                  {"label": "View", "width": 60,
@@ -78,23 +81,43 @@ class GroupsTable(CustomTable):
             self.add_member_requested.emit(row, dialog.values)
 
     def openMemberSummaryDialog(self, row):
-        dialog = MemberSummaryDialog(parent=self, members=row.get("members") if row else None)
+        dialog = MemberSummaryDialog(
+            self.api_client,
+            row["public_id"],
+            chama_name=row.get("name", ""),
+            parent=self,
+        )
         dialog.exec_()
 
     def openOfficialsDialog(self, row):
+        if not row:
+            return
+        if self.api_client is None:
+            QMessageBox.warning(self, "Set officials", "The API client is not available.")
+            return
+        if not row.get("public_id"):
+            QMessageBox.warning(
+                self, "Set officials",
+                "This group has no public id, so its officials can't be loaded."
+            )
+            return
+
         dialog = QDialog(self)
         dialog.setWindowTitle("Set officials")
-
+ 
         layout = QVBoxLayout(dialog)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        tab3 = Tab3()
+        tab3 = Tab3(self.api_client)
         layout.addWidget(tab3)
 
         tab3.cancel_clicked.connect(dialog.reject)
         tab3.finish_clicked.connect(dialog.accept)
 
-        dialog.exec_()
+        tab3.load_chama(row)
+
+        if dialog.exec_() == QDialog.Accepted:
+            self.officials_saved.emit(row)
 
     def openDeleteDialog(self, row):
         name = row.get("name", "this group") if row else "this group"

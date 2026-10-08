@@ -1,9 +1,25 @@
-from PyQt5.QtWidgets import (
-    QFrame,
-    QHBoxLayout
-)
-from components.form_dropdown import FormDropdown
+from datetime import datetime
+from PyQt5.QtWidgets import QFrame, QHBoxLayout
 from components.custom_table import CustomTable
+
+
+def _fmt_date(value):
+    if not value:
+        return "—"
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00")).strftime("%b %Y")
+    except ValueError:
+        return str(value)
+
+
+def normalize_member(m):
+    return {
+        "id": m.get("id"),
+        "name": m.get("full_name") or "Unknown",
+        "phone": m.get("phone") or "—",
+        "member_since": _fmt_date(m.get("joined_on")),
+    }
+
 
 class MembersTable(QFrame):
     def __init__(self):
@@ -12,27 +28,13 @@ class MembersTable(QFrame):
 
     def initUI(self):
         main_layout = QHBoxLayout(self)
-
-        drop_down = FormDropdown(
-            "Select a chama...",
-            ["Mwangaza Women Chama", "Tumaini Group", "Upendo Chama"],
-            height=40,
-            icon_path="resources/down_arrow.svg",
-        )
-
         columns = [
             {"header": "Member Name", "key": "name"},
             {"header": "Phone Number", "key": "phone", "center": True},
             {"header": "Member Since", "key": "member_since", "center": True},
         ]
+        self.table = CustomTable(columns)
+        main_layout.addWidget(self.table)
 
-        table = CustomTable(columns)
-        main_layout.addWidget(table)
-
-        members = [
-            {"name": "Wanjiku Mwangi", "phone": "0712 345 678", "member_since": "Jan 2023"},
-            {"name": "Otieno Odhiambo", "phone": "0723 456 789", "member_since": "Mar 2023"},
-            {"name": "Amina Hassan", "phone": "0734 567 890", "member_since": "Jun 2024"},
-        ]
-
-        table.populate(members)
+    def set_members(self, members):
+        self.table.populate(members)

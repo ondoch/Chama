@@ -34,7 +34,6 @@ class EmployeeDashboard(QFrame):
 
     def __init__(self, api_client=None):
         super().__init__()
-        # Accept API client instance (create default if not passed)
         self.api_client = api_client or APIClient()
         self.employees = []
         self.fetch_worker = None
@@ -43,7 +42,6 @@ class EmployeeDashboard(QFrame):
         self.setStylesheet()
         self.updateBanners()
 
-        # Fetch employees from the backend when initialized
         self.loadEmployeesFromBackend()
 
     def initUI(self):
@@ -156,31 +154,23 @@ class EmployeeDashboard(QFrame):
 
         main_layout.addWidget(container_widget)
 
-    # --- Backend Loading Methods ---
-
     def loadEmployeesFromBackend(self):
-        """Asynchronously fetches employee data from the backend API."""
         self.fetch_worker = FetchEmployeesWorker(self.api_client)
         self.fetch_worker.success.connect(self.onEmployeesFetched)
         self.fetch_worker.error.connect(self.onEmployeesFetchError)
         self.fetch_worker.start()
 
     def onEmployeesFetched(self, employee_list):
-        """Callback when background fetch completes successfully."""
         self.employees = employee_list
         self.applyFilters()
         self.updateBanners()
 
     def onEmployeesFetchError(self, error_msg):
-        """Callback on fetch failure."""
         print(f"[ERROR] Failed to fetch employees: {error_msg}")
         QMessageBox.warning(self, "Could not load employees", error_msg)
 
-    # --- Actions and Filtering ---
-
     def applyFilters(self):
         query = self.search.entry.text().strip().lower()
-
         if hasattr(self.status_dropdown, "currentText"):
             selected_status = self.status_dropdown.currentText()
         elif hasattr(self.status_dropdown, "combo"):
@@ -214,8 +204,6 @@ class EmployeeDashboard(QFrame):
         self.table.populate(filtered)
 
     def openAddEmployee(self):
-        """Opens the dialog. The dialog posts to the API itself and only
-        closes with Accepted once the employee was created."""
         dialog = EmployeeInformation(self.api_client, self)
         if dialog.exec() == QDialog.Accepted:
             self.loadEmployeesFromBackend()

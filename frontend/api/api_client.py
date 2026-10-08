@@ -192,6 +192,26 @@ class APIClient:
 
         return data
 
+    def list_officials(self, chama_id):
+        return self.request("GET", f"/api/chamas/{chama_id}/officials/")
+
+    def save_officials(self, chama_id, selection):
+        return self.request(
+            "PUT", f"/api/chamas/{chama_id}/officials/set/",
+            json={"officials": selection},
+        )
+
+    @staticmethod
+    def _results(data):
+        if isinstance(data, dict):
+            return data.get("results", [])
+        return data or []
+
+    @staticmethod
+    def _member_id(official):
+        m = official.get("member")
+        return m.get("id") if isinstance(m, dict) else m
+
 
 class ApiWorker(QThread):
     """Runs any callable off the UI thread. Emits its return value or an error message."""

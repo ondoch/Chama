@@ -1,9 +1,11 @@
-from PyQt5.QtWidgets import QFrame, QPushButton, QVBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QFrame, QPushButton, QVBoxLayout
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtGui import QCursor
 
 
 class ContextMenu(QFrame):
+    MENU_WIDTH = 180
+
     def __init__(self, parent=None, row_data=None):
         super().__init__(parent, Qt.Popup | Qt.FramelessWindowHint)
         self.row_data = row_data
@@ -81,7 +83,8 @@ class ContextMenu(QFrame):
                 max-height: 1px;
             }
         """)
-        self.setFixedWidth(180)
+        self.setFixedWidth(self.MENU_WIDTH)
+        self.adjustSize()
 
     def _on_edit(self):
         self.close()
@@ -110,12 +113,36 @@ class ContextMenu(QFrame):
             parent.openDeleteDialog(self.row_data)
 
     @staticmethod
+    def _screen_area(point):
+        screen = QApplication.screenAt(point) or QApplication.primaryScreen()
+        return screen.availableGeometry()
+
+    @staticmethod
     def show_at_button(button, parent=None, row_data=None):
         menu = ContextMenu(parent=parent, row_data=row_data)
+        width = menu.width()
+        height = menu.height()
+
         if button is not None:
-            pos = button.mapToGlobal(button.rect().bottomRight())
-            menu.move(pos.x() - menu.sizeHint().width(), pos.y())
+            below_right = button.mapToGlobal(button.rect().bottomRight())
+            above_right = button.mapToGlobal(button.rect().topRight())
+            area = ContextMenu._screen_area(below_right)
+
+            x = below_right.x() - width + 1
+            y = below_right.y()
+
+            if y + height > area.bottom():
+                y = above_right.y() - height
         else:
-            menu.move(QCursor.pos())
+            cursor = QCursor.pos()
+            area = ContextMenu._screen_area(cursor)
+            x, y = cursor.x(), cursor.y()
+            if y + height > area.bottom():
+                y = cursor.y() - height
+
+        x = max(area.left(), min(x, area.right() - width + 1))
+        y = max(area.top(), min(y, area.bottom() - height + 1))
+
+        menu.move(QPoint(x, y))
         menu.show()
         return menu

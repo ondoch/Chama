@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPixmap
 from components.officials_input import OfficialsInput
 from components.banner_3 import Banner3
@@ -14,7 +14,11 @@ from components.style_constants import (
     COLOR_TEXT_PRIMARY
 )
 
+
 class Official(QWidget):
+    officials_changed = pyqtSignal(dict)
+    POSITIONS = ("Chairperson", "Secretary", "Treasurer")
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -31,9 +35,9 @@ class Official(QWidget):
         header_container_layout = QHBoxLayout(header_container)
 
         icon = QLabel()
-        icon.setFixedSize(45,45)
+        icon.setFixedSize(45, 45)
         pixmap = QPixmap("resources/leader.svg")
-        icon.setPixmap(pixmap.scaled(43,43, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        icon.setPixmap(pixmap.scaled(43, 43, Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
         banner = Banner3()
 
@@ -45,17 +49,39 @@ class Official(QWidget):
 
         main_layout.setAlignment(Qt.AlignCenter)
 
-        choice_1 = OfficialsInput("Chairperson")
-        choice_2 = OfficialsInput("Secretary")
-        choice_3 = OfficialsInput("Treasurer")
+        self.inputs = {pos: OfficialsInput(pos) for pos in self.POSITIONS}
+        for inp in self.inputs.values():
+            inp.selection_changed.connect(self._on_selection_changed)
 
         container_widget_layout.addWidget(banner)
         container_widget_layout.addWidget(header_container)
-        container_widget_layout.addWidget(choice_1)
-        container_widget_layout.addWidget(choice_2)
-        container_widget_layout.addWidget(choice_3)
+        for inp in self.inputs.values():
+            container_widget_layout.addWidget(inp)
 
         main_layout.addWidget(container_widget)
+
+    def set_members(self, members):
+        for inp in self.inputs.values():
+            inp.set_members(members)
+        self._on_selection_changed()
+
+    def set_selected(self, ids_by_position):
+        for pos, inp in self.inputs.items():
+            inp.set_selected_id(ids_by_position.get(pos.lower()))
+        self._on_selection_changed()
+
+    def selected_officials(self):
+        return {pos: inp.selected_member() for pos, inp in self.inputs.items()}
+
+    def selected_ids(self):
+        return {pos.lower(): inp.selected_id() for pos, inp in self.inputs.items()}
+
+    def _on_selection_changed(self):
+        chosen = {pos: inp.selected_id() for pos, inp in self.inputs.items()}
+        for pos, inp in self.inputs.items():
+            taken = {mid for p, mid in chosen.items() if p != pos and mid is not None}
+            inp.set_disabled_ids(taken)
+        self.officials_changed.emit(self.selected_officials())
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

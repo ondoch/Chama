@@ -46,6 +46,7 @@ def clean_number(value):
 
 def normalize_chama(c):
     return {
+        "id": c.get("id"),
         "public_id": c.get("public_id"),
         "name": c.get("chama_name", ""),
         "description": c.get("description", ""),
@@ -58,7 +59,7 @@ def normalize_chama(c):
         "created_on": format_date(c.get("created_at")),
         "status": str(c.get("status", "")).title(),
         "member_count": c.get("member_count", 0),
-        "officials_count": 0,
+        "officials_count": c.get("officials_count", 0),
         "pending_approvals": 0,
         "raw": c,
     }
@@ -78,7 +79,6 @@ def form_to_payload(values):
 
 
 def member_to_payload(values):
-    """Maps the MemberInformation dialog values to the MemberSerializer fields."""
     personal = values.get("Personal details", {})
     residence = values.get("Residential information", {})
     employment = values.get("Employment information", {})
@@ -114,7 +114,6 @@ def member_to_payload(values):
         "kin_phone": kin.get("phone number"),
         "kin_address": kin.get("physical address"),
     }
-    # Drop empty values so optional fields don't fail validation
     return {k: v for k, v in payload.items() if v not in (None, "")}
 
 
@@ -219,10 +218,11 @@ class ChamaDashboard(QFrame):
         container_widget_layout.addLayout(banner_layout)
         container_widget_layout.addWidget(search_widget)
 
-        self.table = GroupsTable()
+        self.table = GroupsTable(api_client=self.api)
         self.table.edit_requested.connect(self.editChama)
         self.table.close_requested.connect(self.closeChama)
         self.table.add_member_requested.connect(self.addMember)
+        self.table.officials_saved.connect(lambda row: self.loadChamas())
 
         container_widget_layout.addWidget(self.table)
 
@@ -343,7 +343,7 @@ class ChamaDashboard(QFrame):
         QMessageBox.information(
             self, "Member added", f"{name} was added successfully."
         )
-        self.loadChamas()  # refresh member counts in the table and banners
+        self.loadChamas()
 
     def updateBanners(self):
         total_chamas = len(self.chamas)

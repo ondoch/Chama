@@ -1,15 +1,14 @@
-from PyQt5.QtWidgets import (
-    QComboBox
-)
+from PyQt5.QtWidgets import QComboBox
+
 
 class FormDropdown(QComboBox):
     def __init__(self, placeholder, items=None, height=None, icon_path="resources/down_arrow.svg"):
         super().__init__()
         self.setObjectName("formDropdown")
 
-        self.height = height
-
-        self.setFixedHeight(int(self.height))
+        self._height = height
+        if self._height:
+            self.setFixedHeight(int(self._height))
         self.setEditable(False)
 
         if placeholder:
@@ -60,6 +59,9 @@ class FormDropdown(QComboBox):
             QComboBox#formDropdown QAbstractItemView::item {{
                 min-height: 28px;
                 padding-left: 8px;
+            }}
+            QComboBox#formDropdown QAbstractItemView::item:disabled {{
+                color: #B0B4B9;
             }}
         """)
 

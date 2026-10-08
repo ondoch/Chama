@@ -87,7 +87,6 @@ class AppController:
 
         print("[DEBUG] Creating MainWindow...")
 
-        # FIX: Pass user_data into MainWindow
         self.main_window = MainWindow(self.api, user_data=user_data)
 
         print("[DEBUG] MainWindow object created")

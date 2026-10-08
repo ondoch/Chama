@@ -61,20 +61,24 @@ class SummaryWidget(QWidget):
 
         chama_label = QLabel("Chama:")
         chama_label.setObjectName("chama_label")
-        members_selected = QLabel("Members Selected:")
+        members_selected = QLabel("Members:")
         members_selected.setObjectName("members_selected")
         officials = QLabel("Officials:")
         officials.setObjectName("officials")
 
-        chama_label_1 = QLabel("Mwangaza Women Group")
+        chama_label_1 = QLabel("—")
         chama_label_1.setObjectName("chama_label_1")
         chama_label_1.setWordWrap(True)
-        members_selected_1 = QLabel("3")
+        members_selected_1 = QLabel("0")
         members_selected_1.setAlignment(Qt.AlignCenter)
         members_selected_1.setObjectName("members_selected_1")
-        officials_1 = QLabel("3")
+        officials_1 = QLabel("0")
         officials_1.setAlignment(Qt.AlignCenter)
         officials_1.setObjectName("officials_1")
+
+        self.chama_value = chama_label_1
+        self.members_value = members_selected_1
+        self.officials_count_value = officials_1
 
         container_layout_1.addWidget(chama_label, 0, 0)
         container_layout_1.addWidget(members_selected, 1, 0)
@@ -109,13 +113,13 @@ class SummaryWidget(QWidget):
         container_layout_2.setColumnStretch(0, 1)
         container_layout_2.setColumnStretch(1, 1)
 
-        chairperson_label = QLabel("John Kamau")
+        chairperson_label = QLabel("Not assigned")
         chairperson_label.setObjectName("chairperson_label")
         chairperson_label.setAlignment(Qt.AlignCenter)
-        secretary_label = QLabel("Jane Njeri")
+        secretary_label = QLabel("Not assigned")
         secretary_label.setObjectName("secretary_label")
         secretary_label.setAlignment(Qt.AlignCenter)
-        treasurer_label = QLabel("Peter Otieno")
+        treasurer_label = QLabel("Not assigned")
         treasurer_label.setObjectName("treasurer_label")
         treasurer_label.setAlignment(Qt.AlignCenter)
 
@@ -128,6 +132,12 @@ class SummaryWidget(QWidget):
         treasurer_label_1 = QLabel("Treasurer")
         treasurer_label_1.setObjectName("treasurer_label_1")
         treasurer_label_1.setAlignment(Qt.AlignCenter)
+
+        self.official_names = {
+            "Chairperson": chairperson_label,
+            "Secretary": secretary_label,
+            "Treasurer": treasurer_label,
+        }
 
         container_layout_2.addWidget(chairperson_label, 0, 0)
         container_layout_2.addWidget(secretary_label, 1, 0)
@@ -142,6 +152,20 @@ class SummaryWidget(QWidget):
 
         main_layout.addWidget(widget_1)
         main_layout.addWidget(widget_2)
+
+    def set_chama(self, name):
+        self.chama_value.setText(name or "—")
+
+    def set_members_count(self, count):
+        self.members_value.setText(str(count))
+
+    def set_officials(self, officials):
+        filled = 0
+        for pos, label in self.official_names.items():
+            member = officials.get(pos)
+            label.setText(member["name"] if member else "Not assigned")
+            filled += bool(member)
+        self.officials_count_value.setText(str(filled))
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

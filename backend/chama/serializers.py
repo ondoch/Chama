@@ -41,6 +41,7 @@ def open_assignments(chama):
 
 class ChamaSerializer(serializers.ModelSerializer):
     member_count = serializers.SerializerMethodField()
+    officials_count = serializers.SerializerMethodField()
     assigned_to = serializers.SerializerMethodField()
     created_by = serializers.SerializerMethodField()
 
@@ -58,16 +59,20 @@ class ChamaSerializer(serializers.ModelSerializer):
             "pool_percentage",
             "loan_percentage",
             "status",
+            "created_at",
             "created_by",
             "member_count",
+            "officials_count",
             "assigned_to",
         ]
 
         read_only_fields = [
             "public_id",
             "status",
+            "created_at",
             "created_by",
             "member_count",
+            "officials_count",
             "assigned_to",
         ]
 
@@ -78,6 +83,14 @@ class ChamaSerializer(serializers.ModelSerializer):
             return count
 
         return chama.members.filter(is_active=True).count()
+
+    def get_officials_count(self, chama):
+        count = getattr(chama, "officials_count", None)
+
+        if count is not None:
+            return count
+
+        return chama.officials.filter(ended_on__isnull=True).count()
 
     def get_assigned_to(self, chama):
         return [

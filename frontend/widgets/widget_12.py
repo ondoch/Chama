@@ -17,10 +17,9 @@ ROLE_STYLES = {
     "chairperson": {"bg": "#cfe8ff", "text": "#1c5d99", "border": "#8fc4f0"},
     "treasurer":   {"bg": "#d7f7df", "text": "#1e7a4c", "border": "#8fdba8"},
     "secretary":   {"bg": "#fff6b8", "text": "#8a6d00", "border": "#e6d27a"},
-    "member":      {"bg": "#e6f4ff", "text": "#1c5d99", "border": None},
+    "member":      {"bg": "#e6f4ff", "text": "#1c5d99", "border": "#a9d2f3"},
 }
 
-OFFICIAL_ROLES = {"chairperson", "treasurer", "secretary"}
 
 def _make_role_badge(role_value, row_data):
     role_key = (role_value or "member").strip().lower()
@@ -34,7 +33,7 @@ def _make_role_badge(role_value, row_data):
     label = QLabel(role_value or "Member")
     label.setAlignment(Qt.AlignCenter)
 
-    if role_key in OFFICIAL_ROLES and style["border"]:
+    if style["border"]:
         border_css = f"border: 1px solid {style['border']};"
     else:
         border_css = "border: none;"
@@ -65,8 +64,8 @@ class MemberSummary(QWidget):
     def initUI(self):
         main_layout = QVBoxLayout(self)
 
-        header = QLabel("Mwangaza Women Group")
-        header.setObjectName("header")
+        self.header = QLabel("Members")  # replaced by set_title()
+        self.header.setObjectName("header")
 
         search = SearchInput("Search member...")
 
@@ -81,7 +80,7 @@ class MemberSummary(QWidget):
         ]
         self.table = CustomTable(columns)
 
-        main_layout.addWidget(header)
+        main_layout.addWidget(self.header)
         main_layout.addWidget(search, alignment=Qt.AlignLeft)
         main_layout.addWidget(self.table)
 
@@ -95,6 +94,9 @@ class MemberSummary(QWidget):
                 background-color: transparent;
             }}
         """)
+
+    def set_title(self, title: str):
+        self.header.setText(title or "Members")
 
     def set_members(self, members: list):
         self.table.populate(members)
