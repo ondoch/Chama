@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from django.db.models import Q
 
-# Create your models here.
 class Assignment(models.Model):
     chama = models.ForeignKey("chama.Chama", on_delete=models.CASCADE, related_name="assignments")
     employee = models.ForeignKey("employee.employee", on_delete=models.CASCADE, related_name="assignments")

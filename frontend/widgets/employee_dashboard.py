@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from api.api_client import APIClient, FetchEmployeesWorker
+from api.api_client import APIClient, FetchEmployeesWorker, ApiWorker
 
 from components.banner_4 import Banner4
 from components.form_dropdown import FormDropdown
@@ -37,6 +37,7 @@ class EmployeeDashboard(QFrame):
         self.api_client = api_client or APIClient()
         self.employees = []
         self.fetch_worker = None
+        self._workers = set()
 
         self.initUI()
         self.setStylesheet()
@@ -145,7 +146,8 @@ class EmployeeDashboard(QFrame):
         container_widget_layout.addLayout(banner_layout)
         container_widget_layout.addWidget(search_widget)
 
-        self.table = MembersTable()
+        # The View button calls openViewEmployee with the clicked row
+        self.table = MembersTable(on_view=self.openViewEmployee)
         self.table.populate(self.employees)
         container_widget_layout.addWidget(self.table)
 
@@ -204,7 +206,34 @@ class EmployeeDashboard(QFrame):
         self.table.populate(filtered)
 
     def openAddEmployee(self):
-        dialog = EmployeeInformation(self.api_client, self)
+        dialog = EmployeeInformation(self.api_client, parent=self)
+        if dialog.exec() == QDialog.Accepted:
+            self.loadEmployeesFromBackend()
+
+    # ── View employee (read-only dialog) ───────────────────────────────────
+    def openViewEmployee(self, row):
+        employee_id = row.get("id")
+        if employee_id is None:
+            self._showEmployee(row.get("raw_data") or row)
+            return
+
+        worker = ApiWorker(self.api_client.get_employee, employee_id)
+        self._workers.add(worker)
+        worker.success.connect(self._showEmployee)
+        worker.error.connect(lambda msg, r=row: self._viewFallback(r, msg))
+        worker.finished.connect(lambda w=worker: self._workers.discard(w))
+        worker.start()
+
+    def _viewFallback(self, row, message):
+        print(f"[WARN] Could not load employee detail: {message}")
+        self._showEmployee(row.get("raw_data") or row)
+
+    def _showEmployee(self, data):
+        if not isinstance(data, dict):
+            return
+        dialog = EmployeeInformation(
+            self.api_client, employee=data, parent=self
+        )
         if dialog.exec() == QDialog.Accepted:
             self.loadEmployeesFromBackend()
 

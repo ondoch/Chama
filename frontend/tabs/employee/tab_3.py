@@ -16,8 +16,9 @@ class Tab3(QFrame):
     previous_clicked = pyqtSignal()
     finish_clicked = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, api_client):
         super().__init__()
+        self.api_client = api_client
         self.initUI()
         self.setStylesheet()
 
@@ -51,7 +52,7 @@ class Tab3(QFrame):
         self.previous_btn.clicked.connect(self.previous_clicked.emit)
         self.finish_btn.clicked.connect(self.finish_clicked.emit)
 
-        self.widget_1 = Widget5()
+        self.widget_1 = Widget5(self.api_client)
         container_1_layout.addWidget(self.widget_1)
 
         navigation_layout.addWidget(self.previous_btn)

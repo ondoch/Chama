@@ -15,9 +15,9 @@ class AddEmployee(QFrame):
 
     CONTENT_WIDTH = 1100
 
-    def __init__(self):
+    def __init__(self, api_client):
         super().__init__()
-
+        self.api_client = api_client
         self.initUI()
 
     def initUI(self):
@@ -36,7 +36,7 @@ class AddEmployee(QFrame):
 
         self.tab_1 = Tab1()
         self.tab_2 = Tab2()
-        self.tab_3 = Tab3()
+        self.tab_3 = Tab3(self.api_client)
 
         self.tab_2.previous_btn.clicked.connect(self.rolesPermissions)
         self.tab_2.next_btn.clicked.connect(self.chamaAssignments)

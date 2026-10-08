@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt
 from components.style_constants import COLOR_BORDER
 from components.header import Header
 from components.checkbox import CheckBox
+
 class Container_3(QFrame):
     def __init__(self):
         super().__init__()

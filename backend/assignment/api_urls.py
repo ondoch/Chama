@@ -3,7 +3,7 @@ from django.urls import path
 from .api_views import AssignmentListView, AssignView, UnassignView
 
 urlpatterns = [
-    path("chamas/<int:chama_pk>/assign/", AssignView.as_view(), name="chama-assign"),
-    path("chamas/<int:chama_pk>/unassign/", UnassignView.as_view(), name="chama-unassign"),
-    path("chamas/<int:chama_pk>/assignments/", AssignmentListView.as_view(), name="chama-assignments"),
+    path("chamas/<uuid:public_id>/assign/", AssignView.as_view(), name="chama-assign"),
+    path("chamas/<uuid:public_id>/unassign/", UnassignView.as_view(), name="chama-unassign"),
+    path("chamas/<uuid:public_id>/assignments/", AssignmentListView.as_view(), name="chama-assignments"),
 ]

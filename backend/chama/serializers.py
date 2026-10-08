@@ -20,23 +20,34 @@ SETTINGS_FIELDS = {
 }
 
 
+def employee_code(employee):
+    """
+    The employee's public code (e.g. CHM-XXXXXX).
+
+    Your code used both `employee_ID` and `employee_number`. Only one is the
+    real attribute on Employee; this tolerates either. Once you confirm which
+    one it is, replace calls to this with that attribute and delete this helper.
+    """
+    if employee is None:
+        return None
+    return getattr(employee, "employee_ID", None) or getattr(employee, "employee_number", None)
+
+
 def employee_brief(employee):
     if employee is None:
         return None
 
     return {
         "id": employee.pk,
-        "employee_ID": employee.employee_ID,
+        "employee_ID": employee_code(employee),
         "name": employee.user.get_full_name(),
     }
 
 
 def open_assignments(chama):
-    return list(
-        chama.assignments
-        .filter(unassigned_at__isnull=True)
-        .select_related("employee__user")
-    )
+    # Filter in Python so a prefetch of "assignments__employee__user"
+    # (done in ChamaViewSet.get_queryset) is reused instead of one query per chama.
+    return [a for a in chama.assignments.all() if a.unassigned_at is None]
 
 
 class ChamaSerializer(serializers.ModelSerializer):

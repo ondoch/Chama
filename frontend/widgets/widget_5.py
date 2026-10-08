@@ -5,9 +5,11 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QHBoxLayout,
     QVBoxLayout,
+    QMessageBox,
 )
 from PyQt5.QtCore import Qt
 
+from api.api_client import ApiWorker, ApiError
 from components.banner import Banner
 from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
@@ -15,21 +17,19 @@ from components.custom_table import CustomTable
 from components.status_badge import StatusBadge
 from components.style_constants import COLOR_BORDER, FONT_FAMILY, COLOR_TEXT_MUTED
 
-
 class Widget5(QFrame):
 
     ROLE_OPTIONS = ["Treasurer", "Chair", "Secretary"]
 
-    def __init__(self):
+    def __init__(self, api_client):
         super().__init__()
-        self.all_chamas = [
-            {"name": "Mwangaza Women Chama", "members": 32, "status": "Active", "selected": False, "role": None},
-            {"name": "Tumaini Group", "members": 18, "status": "Onboarding", "selected": False, "role": None},
-            {"name": "Upendo Chama", "members": 5, "status": "Active", "selected": False, "role": None},
-        ]
+        self.api = api_client
+        self.all_chamas = []
+        self._workers = []
 
         self.initUI()
         self.setStylesheet()
+        self.load_chamas()
 
     def initUI(self):
         main_layout = QHBoxLayout()
@@ -114,6 +114,70 @@ class Widget5(QFrame):
 
         self._refresh_tables()
 
+    def _run(self, fn, on_success, on_error, *args, **kwargs):
+        worker = ApiWorker(fn, *args, **kwargs)
+        worker.success.connect(on_success)
+        worker.error.connect(on_error)
+        worker.finished.connect(
+            lambda w=worker: self._workers.remove(w) if w in self._workers else None
+        )
+        self._workers.append(worker)
+        worker.start()
+
+    def _show_error(self, message):
+        QMessageBox.warning(self, "Chama Assignments", message)
+
+    def load_chamas(self):
+        self._run(
+            self.api.list_chamas,
+            self._on_chamas_loaded,
+            self._show_error,
+            page=None, status="onboarding", unassigned=True,
+        )
+
+    def _on_chamas_loaded(self, data):
+        rows = data.get("results", []) if isinstance(data, dict) else (data or [])
+        self.all_chamas = [
+            {
+                "id": c["public_id"],
+                "name": c.get("chama_name", ""),
+                "members": c.get("member_count", 0),
+                "status": str(c.get("status", "")).title(),
+                "selected": False,
+                "role": None,
+            }
+            for c in rows
+        ]
+        self._refresh_tables()
+
+    def assign_selected(self, employee_id, on_done=None):
+        chosen = [dict(c) for c in self.all_chamas if c["selected"]]
+        if not chosen:
+            if on_done:
+                on_done([])
+            return
+
+        def assign_all():
+            failed = []
+            for c in chosen:
+                try:
+                    self.api.assign_chama(c["id"], employee_id)
+                except ApiError as e:
+                    failed.append(f'{c["name"]}: {e.message}')
+            return failed
+
+        def finished(failed):
+            self.load_chamas()
+            if failed:
+                QMessageBox.warning(
+                    self, "Some chamas were not assigned", "\n".join(failed)
+                )
+            if on_done:
+                on_done(failed)
+
+        self._run(assign_all, finished, self._show_error)
+
+    # ------------------------------------------------------------- table logic
     def on_chama_toggled(self, row_data, checked):
         row_data["selected"] = checked
         self._refresh_tables()
@@ -136,9 +200,9 @@ class Widget5(QFrame):
         return dropdown
 
     def _on_role_changed(self, row, role):
-        name = row.get("name")
+        chama_id = row.get("id")
         for chama in self.all_chamas:
-            if chama["name"] == name:
+            if chama["id"] == chama_id:
                 chama["role"] = role
                 break
 
@@ -146,9 +210,9 @@ class Widget5(QFrame):
         print("edit", row)
 
     def remove_member(self, row):
-        name = row.get("name")
+        chama_id = row.get("id")
         for chama in self.all_chamas:
-            if chama["name"] == name:
+            if chama["id"] == chama_id:
                 chama["selected"] = False
                 chama["role"] = None
                 break
@@ -157,6 +221,9 @@ class Widget5(QFrame):
 
     def getChamaCount(self):
         return len([c for c in self.all_chamas if c["selected"]])
+
+    def getSelectedChamaIds(self):
+        return [c["id"] for c in self.all_chamas if c["selected"]]
 
     def setStylesheet(self):
         self.setStyleSheet(f"""

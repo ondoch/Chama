@@ -40,16 +40,19 @@ class EmployeePersonalInfo(QFrame):
         self.first_name = FormInput("resources/user.svg", "First Name")
         self.email_address = FormInput("resources/email.svg", "Email Address")
         self.national_id = FormInput("resources/id_card.svg", "National ID/Passport number")
-        self.job_title = FormInput("resources/user.svg", "Job Tittle")
+        self.job_title = FormInput("resources/user.svg", "Job Title")
 
         label_1 = QLabel("Status")
         label_1.setStyleSheet("font-size: 13px; font-weight: 500; font-family: 'Segoe UI';")
-        label_2 = QLabel("Active")
-        label_2.setStyleSheet("font-size: 11px; font-family: 'Segoe UI';")
+        self.status_label = QLabel("Active")
+        self.status_label.setStyleSheet("font-size: 11px; font-family: 'Segoe UI';")
         label_3 = QLabel("Inactive employees cannot access the system")
         label_3.setStyleSheet("font-size: 11px; font-family: 'Segoe UI'; color: #6B7280;")
 
         self.toggle = ToggleSwitch()
+        self.toggle.toggled.connect(
+            lambda on: self.status_label.setText("Active" if on else "Inactive")
+        )
         information = Information("Note:", "Employee roles and permissions will be assigned in the next step.")
 
         self.last_name = FormInput("resources/user.svg", "Last Name")
@@ -69,7 +72,7 @@ class EmployeePersonalInfo(QFrame):
 
         status_layout.addWidget(label_1)
         toggle_layout.addWidget(self.toggle)
-        toggle_layout.addWidget(label_2)
+        toggle_layout.addWidget(self.status_label)
         status_layout.addLayout(toggle_layout)
         status_layout.addSpacing(5)
         status_layout.addWidget(label_3)

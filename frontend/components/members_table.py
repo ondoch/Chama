@@ -32,18 +32,28 @@ def actions_factory(actions_config):
         return ActionButtonGroup(actions_config, row_data=row_data)
     return factory
 
-GROUP_COLUMNS = [
-    {"header": "Employee", "key": "name", "factory": make_avatar_cell},
-    {"header": "Role", "key": "role"},
-    {"header": "Chamas Managed", "key": "chamas_managed"},
-    {"header": "Status", "key": "status", "factory": make_status_cell},
-    {"header": "Actions", "key": None, "width": 110,
-     "factory": actions_factory([
-         {"label": "View", "width": 60, "callback": lambda row, btn: print("View", row)},
-     ])},
-]
+
+def build_columns(on_view=None):
+    def view_clicked(row, btn=None):
+        if on_view:
+            on_view(row)
+        else:
+            print("View", row)
+
+    return [
+        {"header": "Employee", "key": "name", "factory": make_avatar_cell},
+        {"header": "Role", "key": "role"},
+        {"header": "Chamas Managed", "key": "chamas_managed"},
+        {"header": "Status", "key": "status", "factory": make_status_cell},
+        {"header": "Actions", "key": None, "width": 110,
+         "factory": actions_factory([
+             {"label": "View", "width": 60, "callback": view_clicked},
+         ])},
+    ]
+
+GROUP_COLUMNS = build_columns()
 
 
 class MembersTable(CustomTable):
-    def __init__(self):
-        super().__init__(GROUP_COLUMNS)
+    def __init__(self, on_view=None):
+        super().__init__(build_columns(on_view))

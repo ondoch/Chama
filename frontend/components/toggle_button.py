@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt, QPropertyAnimation, QRectF, pyqtProperty, QEasingCurve
+from PyQt5.QtCore import Qt, QPropertyAnimation, QRectF, pyqtProperty, QEasingCurve, pyqtSignal
 from PyQt5.QtGui import QPainter, QColor
 from components.style_constants import COLOR_ACCENT_BLUE
 
 
 class ToggleSwitch(QWidget):
+    toggled = pyqtSignal(bool)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedSize(38, 18)
@@ -30,15 +32,23 @@ class ToggleSwitch(QWidget):
     def isChecked(self):
         return self._checked
 
-    def setChecked(self, checked):
+    def setChecked(self, checked, animate=True):
+        checked = bool(checked)
+        changed = checked != self._checked
         self._checked = checked
-        start = self._circle_pos
         end = self.width() - self._circle_diameter - self._margin if checked else self._margin
+
         self.animation.stop()
-        self.animation.setStartValue(start)
-        self.animation.setEndValue(end)
-        self.animation.start()
+        if animate:
+            self.animation.setStartValue(self._circle_pos)
+            self.animation.setEndValue(end)
+            self.animation.start()
+        else:
+            self._circle_pos = end
         self.update()
+
+        if changed:
+            self.toggled.emit(checked)
 
     def get_circle_pos(self):
         return self._circle_pos

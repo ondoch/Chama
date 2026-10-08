@@ -70,6 +70,9 @@ class CheckStatement(QFrame):
     def returnValue(self):
         return self.check_box.isChecked()
 
+    def setValue(self, value):
+        self.check_box.setChecked(bool(value))
+
     def setStylesheet(self):
         self.setStyleSheet(f"""
             QWidget#container {{

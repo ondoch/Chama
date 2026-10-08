@@ -12,7 +12,7 @@ from employee.models import Employee
 
 from .models import Chama
 from .permissions import ChamaPermission
-from .serializers import ChamaSerializer
+from .serializers import ChamaSerializer, employee_code
 from .services import (
     ALLOWED_TRANSITIONS,
     ChamaClosed,
@@ -43,17 +43,33 @@ class ChamaViewSet(
     search_fields = ["chama_name", "registration_number", "description"]
 
     def get_queryset(self):
-        qs = with_extras(scoped_chamas(self.request.user))
+        qs = (
+            with_extras(scoped_chamas(self.request.user))
+            .select_related("created_by__user")
+            .prefetch_related("assignments__employee__user")
+        )
         params = self.request.query_params
+
         if params.get("status"):
             qs = qs.filter(status=params["status"])
+
+        # Chamas nobody currently owns (no open assignment)
         if params.get("unassigned") in TRUE:
             qs = only_unassigned(qs)
-        if params.get("assigned_to"):
-            qs = qs.filter(
-                assignments__employee_id=params["assigned_to"],
+
+        # Chamas a given employee currently has. A subquery is used (instead of
+        # joining assignments onto qs) so the annotated member/official counts
+        # from with_extras are not multiplied by the join.
+        assigned_to = params.get("assigned_to")
+        if assigned_to:
+            if not assigned_to.isdigit():
+                raise ValidationError({"assigned_to": "Must be an employee id."})
+            mine = Chama.objects.filter(
+                assignments__employee_id=int(assigned_to),
                 assignments__unassigned_at__isnull=True,
-            )
+            ).values("pk")
+            qs = qs.filter(pk__in=mine)
+
         return qs
 
     def fresh(self, chama):
@@ -71,7 +87,7 @@ class ChamaViewSet(
             chama.chama_name,
             {
                 "registration_number": chama.registration_number,
-                "created_by": me.employee_number if me else None,
+                "created_by": employee_code(me),
             },
         )
 
@@ -175,7 +191,7 @@ class ChamaReportView(APIView):
                 "workload": [
                     {
                         "employee_id": e.pk,
-                        "employee_number": e.employee_number,
+                        "employee_number": employee_code(e),
                         "name": e.user.get_full_name(),
                         "chamas": e.n_chamas,
                         "active_members": e.n_members,

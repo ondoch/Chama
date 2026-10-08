@@ -73,6 +73,7 @@ class APIClient:
         self.refresh = None
         self.user = None
 
+    # ---------------------------------------------------------------- employees
     def list_employees(self, page=1, search="", status=""):
         params = {}
         if page:
@@ -81,7 +82,6 @@ class APIClient:
             params["search"] = search
         if status and status.lower() != "all":
             params["status"] = status
-
         return self.request("GET", "/api/employees/", params=params)
 
     def create_employee(self, payload):
@@ -90,10 +90,19 @@ class APIClient:
     def update_employee(self, employee_id, payload):
         return self.request("PUT", f"/api/employees/{employee_id}/", json=payload)
 
+    def get_employee(self, employee_id):
+        return self.request("GET", f"/api/employees/{employee_id}/")
+
     def delete_employee(self, employee_id):
         return self.request("DELETE", f"/api/employees/{employee_id}/")
 
-    def list_chamas(self, page=1, search="", status=""):
+    # ------------------------------------------------------------------- chamas
+    def list_chamas(self, page=1, search="", status="", unassigned=False, assigned_to=None):
+        """
+        unassigned=True   -> only chamas with no open assignment
+        assigned_to=<id>  -> only chamas currently assigned to that employee
+        page=None         -> do not send a page parameter
+        """
         params = {}
         if page:
             params["page"] = page
@@ -101,6 +110,10 @@ class APIClient:
             params["search"] = search
         if status and status.lower() != "all":
             params["status"] = status.lower()
+        if unassigned:
+            params["unassigned"] = "true"
+        if assigned_to:
+            params["assigned_to"] = assigned_to
         return self.request("GET", "/api/chamas/", params=params)
 
     def create_chama(self, payload):
@@ -119,6 +132,23 @@ class APIClient:
     def chama_stats(self):
         return self.request("GET", "/api/chamas/stats/")
 
+    def assign_chama(self, public_id, employee_id):
+        return self.request(
+            "POST", f"/api/chamas/{public_id}/assign/",
+            json={"employee": employee_id},
+        )
+
+    def unassign_chama(self, public_id, employee_id):
+        return self.request(
+            "POST", f"/api/chamas/{public_id}/unassign/",
+            json={"employee": employee_id},
+        )
+
+    def list_assignments(self, public_id, include_past=False):
+        params = {"include_past": "true"} if include_past else {}
+        return self.request("GET", f"/api/chamas/{public_id}/assignments/", params=params)
+
+    # ------------------------------------------------------------------ members
     def list_members(self, chama_id, include_removed=False):
         params = {"include_removed": "true"} if include_removed else {}
         return self.request("GET", f"/api/chamas/{chama_id}/members/", params=params)
@@ -126,6 +156,7 @@ class APIClient:
     def create_member(self, chama_id, payload):
         return self.request("POST", f"/api/chamas/{chama_id}/members/", json=payload)
 
+    # --------------------------------------------------------------- http layer
     def request(self, method, path, **kwargs):
         """Wrapper around send() that handles automatic 401 token refresh."""
         try:
@@ -337,6 +368,24 @@ class CreateEmployeeWorker(QThread):
     def run(self):
         try:
             result = self.api_client.create_employee(self.payload)
+            self.success.emit(result or {})
+        except Exception as e:
+            msg = getattr(e, "message", str(e))
+            self.error.emit(msg)
+
+class UpdateEmployeeWorker(QThread):
+    success = pyqtSignal(dict)
+    error = pyqtSignal(str)
+
+    def __init__(self, api_client, employee_id, payload):
+        super().__init__()
+        self.api_client = api_client
+        self.employee_id = employee_id
+        self.payload = payload
+
+    def run(self):
+        try:
+            result = self.api_client.update_employee(self.employee_id, self.payload)
             self.success.emit(result or {})
         except Exception as e:
             msg = getattr(e, "message", str(e))
