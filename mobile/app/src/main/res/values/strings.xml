@@ -14,4 +14,16 @@
     <string name="my_pool">My pool</string>
     <string name="pool_amount">KSh 3,400</string>
     <string name="pool_desc">Total pool amount</string>
+    <string name="next_contribution">Next contribution</string>
+    <string name="contribution_date">KSh 1,500 due on Aug 30, 2026</string>
+    <string name="up_coming">Upcoming Meeting</string>
+    <string name="description_1">Monthly Group Meeting</string>
+    <string name="meeting_date">Sat, Aug 31, 2024 10:10 AM</string>
+    <string name="location">Vijana Youth Center</string>
+    <string name="transactions">Recent Transaction</string>
+    <string name="view_all">View All</string>
+    <string name="contribution">Contribution</string>
+    <string name="contribution_date">Paid on Oct 12, 2026</string>
+    <string name="contribution_amount">KSh 1,500</string>
+    <string name="group_announcements">Group Announcements</string>
 </resources>
