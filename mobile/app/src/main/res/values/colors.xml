@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="active_background">#C6F1CE</color>
+    <color name="active_border">#29A842</color>
+    <color name="badge_background">#B8D4FF</color>
+    <color name="initials">#0054D1</color>
+</resources>

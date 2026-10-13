@@ -48,6 +48,9 @@ class EmployeeInformation(QDialog):
 
         self._prefill()
 
+        if self.is_edit:
+            self.add_employee.set_employee_id(self.employee_id)
+
     def _permission_fields(self):
         p1 = self.add_employee.tab_2.widget_1
         p2 = self.add_employee.tab_2.widget_2
@@ -226,7 +229,25 @@ class EmployeeInformation(QDialog):
         elif self.is_edit:
             QMessageBox.information(self, "Employee updated", "The changes were saved.")
 
-        self.accept()
+        if self.is_edit:
+            self.accept()
+            return
+
+        new_id = result.get("id")
+        if new_id is None:
+            QMessageBox.warning(
+                self,
+                "Chamas not assigned",
+                "The employee was created, but the server did not return an id, "
+                "so the selected chamas could not be assigned. Open the employee "
+                "and assign them there.",
+            )
+            self.accept()
+            return
+
+        self.add_employee.assign_selected(
+            new_id, on_done=lambda failed: self.accept(), reload=False
+        )
 
     def _on_save_error(self, message):
         self.add_employee.tab_3.finish_btn.setEnabled(True)
@@ -237,3 +258,7 @@ class EmployeeInformation(QDialog):
         if self.save_worker is not None and self.save_worker.isRunning():
             return
         super().reject()
+
+    def done(self, result):
+        self.add_employee.wait_for_workers()
+        super().done(result)

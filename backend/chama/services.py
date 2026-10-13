@@ -1,5 +1,6 @@
 from django.apps import apps
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from django.utils import timezone
 from rest_framework.exceptions import APIException
 
 from .models import Chama
@@ -47,7 +48,7 @@ def scoped_chamas(user):
 
     employee = getattr(user, "employee", None)
 
-    if employee is None or employee.status == "terminated":
+    if employee is None or not employee.status:
         return chamas.none()
 
     return chamas.filter(
@@ -63,7 +64,7 @@ def only_unassigned(chamas):
         ~Exists(
             Assignment.objects.filter(
                 chama=OuterRef("pk"),
-                unassigned_at__isnull=False,
+                unassigned_at__isnull=True,
             )
         )
     )
@@ -89,3 +90,48 @@ def with_extras(queryset):
             to_attr="open_assignments",
         )
     )
+
+
+def sync_status_with_officials(chama, actor=None):
+    from access.services import record_audit
+
+    if chama.officials.filter(ended_on__isnull=True).exists():
+        old, new, reason = Chama.Status.ONBOARDING, Chama.Status.ACTIVE,
+    else:
+        old, new, reason = Chama.Status.ACTIVE, Chama.Status.ONBOARDING,
+    changed = Chama.objects.filter(pk=chama.pk, status=old).update(
+        status=new, updated_at=timezone.now()
+    )
+
+    if changed:
+        record_audit(
+            actor,
+            "chama.status_changed",
+            chama.pk,
+            chama.chama_name,
+            {"from": old.value, "to": new.value, "reason": reason},
+        )
+    return bool(changed)
+
+
+def revert_to_onboarding_if_unassigned(chama, actor=None):
+    from access.services import record_audit
+
+    Assignment = apps.get_model("assignment", "Assignment")
+
+    if Assignment.objects.filter(chama=chama, unassigned_at__isnull=True).exists():
+        return False
+
+    changed = Chama.objects.filter(pk=chama.pk, status=Chama.Status.ACTIVE).update(
+        status=Chama.Status.ONBOARDING, updated_at=timezone.now()
+    )
+
+    if changed:
+        record_audit(
+            actor,
+            "chama.status_changed",
+            chama.pk,
+            chama.chama_name,
+            {"from": "active", "to": "onboarding", "reason": "no employee assigned"},
+        )
+    return bool(changed)

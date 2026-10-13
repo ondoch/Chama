@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">ChamaHub</string>
+    <string name="member">Member</string>
+    <string name="active">Active</string>
+    <string name="initials">UN</string>
+    <string name="username">User Name</string>
+    <string name="my_contribution">My contributions</string>
+    <string name="amount">KSh 2,500</string>
+    <string name="my_saving">My Savings</string>
+    <string name="savings_amount">KSh 7,500</string>
+    <string name="my_loans">My Loans</string>
+    <string name="loan_amount">KSh 2,500</string>
+    <string name="loan_desc">No active loan</string>
+    <string name="my_pool">My pool</string>
+    <string name="pool_amount">KSh 3,400</string>
+    <string name="pool_desc">Total pool amount</string>
+</resources>

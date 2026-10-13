@@ -11,7 +11,12 @@ from access.services import record_audit
 from authentication.permissions import PasswordUpToDate
 from chama.models import Chama
 from chama.serializers import ChamaSerializer, employee_code
-from chama.services import ChamaClosed, scoped_chamas, with_extras
+from chama.services import (
+    ChamaClosed,
+    revert_to_onboarding_if_unassigned,
+    scoped_chamas,
+    with_extras,
+)
 from employee.models import Employee
 
 from .models import Assignment
@@ -26,11 +31,7 @@ class ChamaAssignmentView(APIView):
         )
 
     def chama_response(self):
-        chama = (
-            with_extras(Chama.objects.filter(pk=self.chama.pk))
-            .prefetch_related("assignments__employee__user")
-            .get()
-        )
+        chama = with_extras(Chama.objects.filter(pk=self.chama.pk)).get()
         return Response(ChamaSerializer(chama, context={"request": self.request}).data)
 
     def employee(self):
@@ -59,8 +60,17 @@ class AssignView(ChamaAssignmentView):
         if not employee.user.has_perm("access.view_chama_details"):
             raise ValidationError({"employee": "That employee does not have the 'View chama details' "
                                                "permission, so cannot work on chamas."})
-        if self.open_assignment(employee):
-            raise ValidationError({"employee": "This employee is already assigned to the chama."})
+        current = (
+            Assignment.objects.filter(chama=self.chama, unassigned_at__isnull=True)
+            .select_related("employee__user")
+            .first()
+        )
+        if current is not None:
+            if current.employee_id == employee.pk:
+                raise ValidationError({"employee": "This employee is already assigned to the chama."})
+            holder = current.employee.user.get_full_name() or "another employee"
+            raise ValidationError({"employee": f"This chama is already assigned to {holder}. "
+                                               "Remove it from them first."})
 
         with transaction.atomic():
             Assignment.objects.create(chama=self.chama, employee=employee, assigned_by=request.user)
@@ -85,6 +95,7 @@ class UnassignView(ChamaAssignmentView):
             assignment.save(update_fields=["unassigned_at"])
             record_audit(request.user, "chama.unassigned", self.chama.pk, self.chama.chama_name,
                          {"employee": employee_code(employee)})
+            revert_to_onboarding_if_unassigned(self.chama, request.user)
         return self.chama_response()
 
 

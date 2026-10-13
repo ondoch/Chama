@@ -5,6 +5,7 @@ from django.utils import timezone
 from access.services import record_audit
 from chama.models import Chama
 from chama.serializers import employee_code
+from chama.services import revert_to_onboarding_if_unassigned
 from employee.models import Employee
 
 from .models import Assignment
@@ -40,3 +41,4 @@ def release_chamas_of_terminated_employee(sender, instance, **kwargs):
                 "reason": "employee terminated",
             },
         )
+        revert_to_onboarding_if_unassigned(assignment.chama)

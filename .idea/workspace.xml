@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="af946b7c-ef4e-4f0c-954e-b83807082861" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/backend/access/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/access/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/access/migrations/0002_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/access/migrations/0002_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/assignment/api_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/assignment/api_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/assignment/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/assignment/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/authentication/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/authentication/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/api_views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/chama/api_views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/chama/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/migrations/0002_chama_created_at.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/migrations/0003_chama_updated_at.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/chama/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/chama/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/chama/services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/employee/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/employee/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/member/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/member/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/member/migrations/0002_chamamember_country_chamamember_county_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/official/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/official/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/modals/employee_information.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/modals/employee_information.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/widgets/employee_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/widgets/employee_widget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/widgets/widget_5.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/widgets/widget_5.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="3KTBOPKnKM9W0z3ROmVs6XInmBT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "android.gradle.sync.needed": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="af946b7c-ef4e-4f0c-954e-b83807082861" name="Changes" comment="" />
+      <created>1791571668911</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1791571668911</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -57,6 +57,19 @@ class AddEmployee(QFrame):
         outer_vertical.addLayout(horizontal_row)
         outer_vertical.addStretch()
 
+    @property
+    def chama_widget(self):
+        return self.tab_3.widget_1
+
+    def set_employee_id(self, employee_id):
+        self.chama_widget.set_employee_id(employee_id)
+
+    def assign_selected(self, employee_id, on_done=None, reload=True):
+        self.chama_widget.assign_selected(employee_id, on_done=on_done, reload=reload)
+
+    def wait_for_workers(self):
+        self.chama_widget.wait_for_workers()
+
     def employeeInformation(self):
         self.stack.setCurrentIndex(1)
 

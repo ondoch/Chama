@@ -43,23 +43,15 @@ class ChamaViewSet(
     search_fields = ["chama_name", "registration_number", "description"]
 
     def get_queryset(self):
-        qs = (
-            with_extras(scoped_chamas(self.request.user))
-            .select_related("created_by__user")
-            .prefetch_related("assignments__employee__user")
-        )
+        qs = with_extras(scoped_chamas(self.request.user)).select_related("created_by__user")
         params = self.request.query_params
 
         if params.get("status"):
             qs = qs.filter(status=params["status"])
 
-        # Chamas nobody currently owns (no open assignment)
         if params.get("unassigned") in TRUE:
             qs = only_unassigned(qs)
-
-        # Chamas a given employee currently has. A subquery is used (instead of
-        # joining assignments onto qs) so the annotated member/official counts
-        # from with_extras are not multiplied by the join.
+            
         assigned_to = params.get("assigned_to")
         if assigned_to:
             if not assigned_to.isdigit():
@@ -200,3 +192,4 @@ class ChamaReportView(APIView):
                 ],
             }
         )
+    

@@ -17,15 +17,19 @@ from components.custom_table import CustomTable
 from components.status_badge import StatusBadge
 from components.style_constants import COLOR_BORDER, FONT_FAMILY, COLOR_TEXT_MUTED
 
-class Widget5(QFrame):
 
+class Widget5(QFrame):
     ROLE_OPTIONS = ["Treasurer", "Chair", "Secretary"]
 
-    def __init__(self, api_client):
+    def __init__(self, api_client, employee_id=None):
         super().__init__()
         self.api = api_client
+        self.employee_id = employee_id
         self.all_chamas = []
+        self._roles = {}
         self._workers = []
+        self._load_token = 0
+        self._busy = False
 
         self.initUI()
         self.setStylesheet()
@@ -127,35 +131,83 @@ class Widget5(QFrame):
     def _show_error(self, message):
         QMessageBox.warning(self, "Chama Assignments", message)
 
+    def wait_for_workers(self, timeout_ms=5000):
+        for worker in list(self._workers):
+            worker.wait(timeout_ms)
+
+    def set_employee_id(self, employee_id):
+        self.employee_id = employee_id
+        self.load_chamas()
+
+    @staticmethod
+    def _results(data):
+        if isinstance(data, dict):
+            return data.get("results", [])
+        return data or []
+
+    def _to_row(self, chama, selected):
+        chama_id = chama["public_id"]
+        return {
+            "id": chama_id,
+            "name": chama.get("chama_name", ""),
+            "members": chama.get("member_count", 0),
+            "status": str(chama.get("status", "")).title(),
+            "selected": selected,
+            "role": self._roles.get(chama_id),
+        }
+
     def load_chamas(self):
+        self._load_token += 1
+        token = self._load_token
+        employee_id = self.employee_id
+
+        def fetch():
+            available = self.api.list_chamas(page=None, status="onboarding", unassigned=True)
+            mine = (
+                self.api.list_chamas(page=None, assigned_to=employee_id)
+                if employee_id else []
+            )
+            return {"available": available, "mine": mine}
+
         self._run(
-            self.api.list_chamas,
-            self._on_chamas_loaded,
+            fetch,
+            lambda data, t=token: self._on_chamas_loaded(data, t),
             self._show_error,
-            page=None, status="onboarding", unassigned=True,
         )
 
-    def _on_chamas_loaded(self, data):
-        rows = data.get("results", []) if isinstance(data, dict) else (data or [])
-        self.all_chamas = [
-            {
-                "id": c["public_id"],
-                "name": c.get("chama_name", ""),
-                "members": c.get("member_count", 0),
-                "status": str(c.get("status", "")).title(),
-                "selected": False,
-                "role": None,
-            }
-            for c in rows
+    def _on_chamas_loaded(self, data, token=None):
+        if token is not None and token != self._load_token:
+            return
+
+        mine = [self._to_row(c, True) for c in self._results(data.get("mine"))]
+        mine_ids = {c["id"] for c in mine}
+        available = [
+            self._to_row(c, False)
+            for c in self._results(data.get("available"))
+            if c["public_id"] not in mine_ids
         ]
+        self.all_chamas = mine + available
         self._refresh_tables()
 
-    def assign_selected(self, employee_id, on_done=None):
-        chosen = [dict(c) for c in self.all_chamas if c["selected"]]
-        if not chosen:
-            if on_done:
-                on_done([])
+    def _live_action(self, fn, *args):
+        if self._busy:
+            self._refresh_tables()
             return
+        self._busy = True
+
+        def done(_):
+            self._busy = False
+            self.load_chamas()
+
+        def failed(message):
+            self._busy = False
+            self._show_error(message)
+            self.load_chamas()
+
+        self._run(fn, done, failed, *args)
+
+    def assign_selected(self, employee_id, on_done=None, reload=True):
+        chosen = [dict(c) for c in self.all_chamas if c["selected"]]
 
         def assign_all():
             failed = []
@@ -167,7 +219,9 @@ class Widget5(QFrame):
             return failed
 
         def finished(failed):
-            self.load_chamas()
+            self.employee_id = employee_id
+            if reload:
+                self.load_chamas()
             if failed:
                 QMessageBox.warning(
                     self, "Some chamas were not assigned", "\n".join(failed)
@@ -175,12 +229,34 @@ class Widget5(QFrame):
             if on_done:
                 on_done(failed)
 
+        if not chosen:
+            finished([])
+            return
+
         self._run(assign_all, finished, self._show_error)
 
-    # ------------------------------------------------------------- table logic
     def on_chama_toggled(self, row_data, checked):
-        row_data["selected"] = checked
-        self._refresh_tables()
+        if self.employee_id is None:
+            row_data["selected"] = checked
+            self._refresh_tables()
+        elif checked:
+            self._live_action(self.api.assign_chama, row_data["id"], self.employee_id)
+        else:
+            self._refresh_tables()
+
+    def remove_member(self, row):
+        chama_id = row.get("id")
+        self._roles.pop(chama_id, None)
+
+        if self.employee_id is None:
+            for chama in self.all_chamas:
+                if chama["id"] == chama_id:
+                    chama["selected"] = False
+                    chama["role"] = None
+                    break
+            self._refresh_tables()
+        else:
+            self._live_action(self.api.unassign_chama, chama_id, self.employee_id)
 
     def _refresh_tables(self):
         available = [c for c in self.all_chamas if not c["selected"]]
@@ -201,6 +277,7 @@ class Widget5(QFrame):
 
     def _on_role_changed(self, row, role):
         chama_id = row.get("id")
+        self._roles[chama_id] = role
         for chama in self.all_chamas:
             if chama["id"] == chama_id:
                 chama["role"] = role
@@ -208,16 +285,6 @@ class Widget5(QFrame):
 
     def edit_member(self, row):
         print("edit", row)
-
-    def remove_member(self, row):
-        chama_id = row.get("id")
-        for chama in self.all_chamas:
-            if chama["id"] == chama_id:
-                chama["selected"] = False
-                chama["role"] = None
-                break
-
-        self._refresh_tables()
 
     def getChamaCount(self):
         return len([c for c in self.all_chamas if c["selected"]])
