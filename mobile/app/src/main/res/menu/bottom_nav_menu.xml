@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:title="@string/home"
+        android:icon="@drawable/home"/>
+    <item
+        android:id="@+id/nav_members"
+        android:title="@string/members"
+        android:icon="@drawable/members_ic"/>
+    <item
+        android:id="@+id/nav_contributions"
+        android:title="@string/contributions"
+        android:icon="@drawable/contribution"/>
+    <item
+        android:id="@+id/nav_loans"
+        android:title="@string/loans"
+        android:icon="@drawable/loan_ic"/>
+</menu>

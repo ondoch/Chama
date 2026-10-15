@@ -6,4 +6,9 @@
     <color name="active_border">#29A842</color>
     <color name="badge_background">#B8D4FF</color>
     <color name="initials">#0054D1</color>
+    <color name="nav_selected">#2457C5</color>
+    <color name="nav_unselected">#7A8494</color>
+    <color name="nav_background">#FFFFFF</color>
+    <color name="nav_indicator">#E5EDFF</color>
+
 </resources>
