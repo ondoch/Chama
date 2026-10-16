@@ -25,6 +25,7 @@
     <Compile Include="api\payload_mapper.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="components\action_buttons.py" />
+    <Compile Include="components\audit_log_table.py" />
     <Compile Include="components\avatar.py" />
     <Compile Include="components\banner.py" />
     <Compile Include="components\banner_2.py" />
@@ -85,6 +86,7 @@
     <Compile Include="tabs\employee\tab_3.py" />
     <Compile Include="tabs\employee\__init__.py" />
     <Compile Include="tabs\__init__.py" />
+    <Compile Include="widgets\audit_log_dashboard.py" />
     <Compile Include="widgets\chama_dashboard.py" />
     <Compile Include="widgets\chama_widget.py" />
     <Compile Include="widgets\employee_dashboard.py" />

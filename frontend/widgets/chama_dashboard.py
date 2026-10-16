@@ -23,7 +23,6 @@ from components.style_constants import (
     COLOR_SIDEBAR_SELECT,
 )
 from components.search_input import SearchInput
-from components.form_dropdown import FormDropdown
 from components.groups_table import GroupsTable
 from components.pagination import Pagination
 from components.banner_4 import Banner4

@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 
+from widgets.audit_log_dashboard import AuditLogDashboard
+
 class AuditLogWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -12,6 +14,6 @@ class AuditLogWindow(QWidget):
     def initUI(self):
         layout = QHBoxLayout(self)
 
-        widget = QLabel("Audit Logs")
+        widget = AuditLogDashboard()
 
         layout.addWidget(widget)

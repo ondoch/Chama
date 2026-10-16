@@ -146,7 +146,6 @@ class EmployeeDashboard(QFrame):
         container_widget_layout.addLayout(banner_layout)
         container_widget_layout.addWidget(search_widget)
 
-        # The View button calls openViewEmployee with the clicked row
         self.table = MembersTable(on_view=self.openViewEmployee)
         self.table.populate(self.employees)
         container_widget_layout.addWidget(self.table)

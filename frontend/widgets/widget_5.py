@@ -15,7 +15,7 @@ from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
 from components.custom_table import CustomTable
 from components.status_badge import StatusBadge
-from components.style_constants import COLOR_BORDER, FONT_FAMILY, COLOR_TEXT_MUTED
+from components.style_constants import FONT_FAMILY, COLOR_TEXT_MUTED
 
 
 class Widget5(QFrame):
