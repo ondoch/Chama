@@ -1,6 +1,3 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout
-from PyQt5.QtCore import Qt
-
 from components.custom_table import CustomTable
 from components.action_buttons import ActionButtonGroup
 
@@ -21,15 +18,13 @@ def build_columns(on_view=None):
     return [
         {"header": "Actor", "key": "actor"},
         {"header": "Action", "key": "action"},
-        {"header": "Target label", "key": "target_label"},
-        {"header": "CReated at", "key": "created_at"},
+        {"header": "Target", "key": "target_label"},
+        {"header": "Created at", "key": "created_at"},
         {"header": "Actions", "key": None, "width": 110,
          "factory": actions_factory([
              {"label": "View", "width": 60, "callback": view_clicked},
          ])},
     ]
-
-GROUP_COLUMNS = build_columns()
 
 
 class AuditLogTable(CustomTable):

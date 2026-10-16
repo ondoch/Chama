@@ -43,7 +43,7 @@ class MainWindow(QWidget):
         self.stacked_widget.addWidget(OnboardingWindow())    # 3 - Onboarding
         self.stacked_widget.addWidget(AssignmentsWindow())   # 4 - Assignments
         self.stacked_widget.addWidget(ReportsWindow())       # 5 - Reports
-        self.stacked_widget.addWidget(AuditLogWindow())      # 6 - Audit logs
+        self.stacked_widget.addWidget(AuditLogWindow(self.api))      # 6 - Audit logs
 
         container_widget_layout.addWidget(self.top_bar)
         container_widget_layout.addWidget(self.stacked_widget)

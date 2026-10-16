@@ -11,7 +11,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
+
 class CustomTable(QWidget):
+    ROW_HEIGHT = 44
+
     def __init__(self, columns: list):
         super().__init__()
 
@@ -143,7 +146,7 @@ class CustomTable(QWidget):
     def add_row(self, row_data: dict):
         row = self.table.rowCount()
         self.table.insertRow(row)
-        self.table.setRowHeight(row, 44)
+        self.table.setRowHeight(row, self.ROW_HEIGHT)
 
         for i, col in enumerate(self.columns):
             key = col.get("key")
@@ -184,6 +187,9 @@ class CustomTable(QWidget):
         self.clear_rows()
         for row_data in rows:
             self.add_row(row_data)
+
+    def rows_that_fit(self) -> int:
+        return max(1, self.table.viewport().height() // self.ROW_HEIGHT)
 
     def get_cell_value(self, row: int, col_index: int):
         widget = self.table.cellWidget(row, col_index)

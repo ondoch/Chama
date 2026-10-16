@@ -1,6 +1,7 @@
 import requests
 from PyQt5.QtCore import QThread, pyqtSignal
 
+
 class ApiError(Exception):
     def __init__(self, message, status_code=None, payload=None):
         super().__init__(message)
@@ -8,8 +9,10 @@ class ApiError(Exception):
         self.status_code = status_code
         self.payload = payload
 
+
 class AuthExpired(ApiError):
     """Raised when the refresh token is expired or invalid."""
+
 
 def _flatten_errors(data, prefix=""):
     lines = []
@@ -23,6 +26,7 @@ def _flatten_errors(data, prefix=""):
     else:
         lines.append(f"{prefix}: {data}" if prefix else str(data))
     return lines
+
 
 class APIClient:
     def __init__(self, base_url="http://127.0.0.1:8000", timeout=10):
@@ -73,7 +77,6 @@ class APIClient:
         self.refresh = None
         self.user = None
 
-    # ---------------------------------------------------------------- employees
     def list_employees(self, page=1, search="", status=""):
         params = {}
         if page:
@@ -96,13 +99,7 @@ class APIClient:
     def delete_employee(self, employee_id):
         return self.request("DELETE", f"/api/employees/{employee_id}/")
 
-    # ------------------------------------------------------------------- chamas
     def list_chamas(self, page=1, search="", status="", unassigned=False, assigned_to=None):
-        """
-        unassigned=True   -> only chamas with no open assignment
-        assigned_to=<id>  -> only chamas currently assigned to that employee
-        page=None         -> do not send a page parameter
-        """
         params = {}
         if page:
             params["page"] = page
@@ -148,7 +145,6 @@ class APIClient:
         params = {"include_past": "true"} if include_past else {}
         return self.request("GET", f"/api/chamas/{public_id}/assignments/", params=params)
 
-    # ------------------------------------------------------------------ members
     def list_members(self, chama_id, include_removed=False):
         params = {"include_removed": "true"} if include_removed else {}
         return self.request("GET", f"/api/chamas/{chama_id}/members/", params=params)
@@ -156,9 +152,24 @@ class APIClient:
     def create_member(self, chama_id, payload):
         return self.request("POST", f"/api/chamas/{chama_id}/members/", json=payload)
 
-    # --------------------------------------------------------------- http layer
+    def list_audit_logs(self, page=1, page_size=None, search="",
+                        date_from=None, date_to=None, action=""):
+        params = {}
+        if page:
+            params["page"] = page
+        if page_size:
+            params["page_size"] = page_size
+        if search:
+            params["search"] = search
+        if action:
+            params["action"] = action
+        if date_from:
+            params["date_from"] = date_from
+        if date_to:
+            params["date_to"] = date_to
+        return self.request("GET", "/api/access/audit-logs/", params=params)
+
     def request(self, method, path, **kwargs):
-        """Wrapper around send() that handles automatic 401 token refresh."""
         try:
             return self.send(method, path, **kwargs)
         except ApiError as e:
@@ -169,7 +180,6 @@ class APIClient:
         return self.send(method, path, **kwargs)
 
     def do_refresh(self):
-        """Refreshes access token using stored refresh token."""
         try:
             data = self.send(
                 "POST",
@@ -188,7 +198,6 @@ class APIClient:
         self.refresh = data.get("refresh", self.refresh)
 
     def send(self, method, path, auth=True, **kwargs):
-        """Executes raw HTTP requests and standardizes responses/errors."""
         headers = kwargs.pop("headers", {})
         if auth and self.access:
             headers["Authorization"] = f"Bearer {self.access}"
@@ -245,7 +254,6 @@ class APIClient:
 
 
 class ApiWorker(QThread):
-    """Runs any callable off the UI thread. Emits its return value or an error message."""
     success = pyqtSignal(object)
     error = pyqtSignal(str)
 
@@ -356,6 +364,7 @@ class FetchEmployeesWorker(QThread):
             msg = getattr(e, "message", str(e))
             self.error.emit(msg)
 
+
 class CreateEmployeeWorker(QThread):
     success = pyqtSignal(dict)
     error = pyqtSignal(str)
@@ -372,6 +381,7 @@ class CreateEmployeeWorker(QThread):
         except Exception as e:
             msg = getattr(e, "message", str(e))
             self.error.emit(msg)
+
 
 class UpdateEmployeeWorker(QThread):
     success = pyqtSignal(dict)
