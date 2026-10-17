@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 
+from widgets.overall_dashboard import Dashboard
+
 class DashboardWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -12,6 +14,6 @@ class DashboardWindow(QWidget):
     def initUI(self):
         layout = QHBoxLayout(self)
 
-        widget = QLabel("Dashboard")
+        widget = Dashboard()
 
         layout.addWidget(widget)
