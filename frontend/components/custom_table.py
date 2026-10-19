@@ -15,10 +15,11 @@ from PyQt5.QtCore import Qt
 class CustomTable(QWidget):
     ROW_HEIGHT = 44
 
-    def __init__(self, columns: list):
+    def __init__(self, columns: list, frameless: bool = False):
         super().__init__()
 
         self.columns = columns
+        self.frameless = frameless
 
         self.initUI()
         self.setStylesheet()
@@ -44,23 +45,33 @@ class CustomTable(QWidget):
         self.table.verticalHeader().setVisible(False)
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.table.setFocusPolicy(Qt.NoFocus)
         self.table.setRowCount(0)
+
+        if self.frameless:
+            self.table.setShowGrid(False)
+            self.table.setAlternatingRowColors(True)
 
         main_layout.addWidget(self.table)
         self.setLayout(main_layout)
 
     def setStylesheet(self):
+        border = "none" if self.frameless else "1px solid #d9d9d9"
+        header_bg = "#F5F7FB" if self.frameless else "#f0f0f0"
+        header_fg = "#6B7280" if self.frameless else "#000000"
         self.setStyleSheet(f"""
             QTableWidget {{
-                border: 1px solid #d9d9d9;
+                border: {border};
                 border-radius: 8px;
                 gridline-color: #eeeeee;
+                alternate-background-color: #FAFBFD;
                 padding: 4px;
                 font-family: "Segoe UI";
                 font-size: 14px;
             }}
             QHeaderView::section {{
-                background-color: #f0f0f0;
+                background-color: {header_bg};
+                color: {header_fg};
                 padding: 8px;
                 border: none;
                 font-weight: bold;

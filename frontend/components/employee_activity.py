@@ -20,13 +20,10 @@ from components.style_constants import (
     FONT_FAMILY,
 )
 
-# local placeholder image used while you are still styling
 DEFAULT_AVATAR = "resources/avatar.jpeg"
 
 
 class EmployeeActivity(QFrame):
-    """One row in the 'Recent Employee Activity' list."""
-
     def __init__(
         self,
         name="Joshua Mochama",
@@ -70,7 +67,7 @@ class EmployeeActivity(QFrame):
         self.time_label.setObjectName("time_label")
 
         main_layout.addWidget(self.avatar_label)
-        main_layout.addWidget(description_container, 1)   # takes the free width
+        main_layout.addWidget(description_container, 1)
         main_layout.addWidget(
             self.time_label, alignment=Qt.AlignRight | Qt.AlignTop
         )
@@ -78,11 +75,9 @@ class EmployeeActivity(QFrame):
     def circularPixmap(self, path, size):
         source = QPixmap(path)
         if source.isNull():
-            # image missing -> plain coloured circle instead of crashing
             source = QPixmap(size, size)
             source.fill(QColor("#7C6EF8"))
 
-        # fill the square, then crop from the centre so the image isn't offset
         source = source.scaled(
             size, size, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation
         )

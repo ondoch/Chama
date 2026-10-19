@@ -19,17 +19,22 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QFrame
+    QFrame,
+    QSizePolicy,
+    QToolTip,
 )
 
 __all__ = ["LineChart", "GrowthCard"]
 
 
 class LineChart(QWidget):
+    MIN_LABEL_PX = 46
+    HOVER_RADIUS = 16
 
     def __init__(self, labels=None, values=None, line_color="#2f5bff",
                  grid_color="#e6ebf5", text_color="#6b7280", y_max=None,
-                 y_step=None, show_vgrid=True, fill=True, parent=None):
+                 y_step=None, show_vgrid=True, fill=True,
+                 tooltip_format="{label}: {value:g}", parent=None):
         super().__init__(parent)
         self.line_color = QColor(line_color)
         self.grid_color = QColor(grid_color)
@@ -38,8 +43,12 @@ class LineChart(QWidget):
         self.fill = fill
         self._fixed_y_max = y_max
         self._fixed_y_step = y_step
+        self.tooltip_format = tooltip_format
+        self._hover = -1
+        self.setMouseTracking(True)
         self.labels, self.values = [], []
-        self.setMinimumSize(300, 180)
+        self.setMinimumSize(160, 110)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         if labels is not None and values is not None:
             self.set_data(labels, values)
 
@@ -48,10 +57,10 @@ class LineChart(QWidget):
             raise ValueError("labels and values must be the same length")
         self.labels = list(labels)
         self.values = list(values)
+        self._hover = -1
         self.update()
 
     def _axis(self):
-        """Return (y_max, y_step), auto-picked when not fixed."""
         if self._fixed_y_max is not None:
             y_max = self._fixed_y_max
             step = self._fixed_y_step or y_max / 5
@@ -71,23 +80,61 @@ class LineChart(QWidget):
                 return m * mag
         return 10 * mag
 
-    # ---------- painting ----------
+    def _geometry(self):
+        y_max, y_step = self._axis()
+        left, right, top, bottom = 38, 10, 10, 26
+        plot = QRectF(left, top, self.width() - left - right,
+                      self.height() - top - bottom)
+        step = plot.width() / len(self.values)
+        pts = [QPointF(plot.left() + step * (i + 0.5),
+                       plot.bottom() - (val / y_max) * plot.height())
+               for i, val in enumerate(self.values)]
+        return plot, pts, step, y_max, y_step, left
+
+    def _point_at(self, pos):
+        if not self.values:
+            return -1
+        _, pts, *_ = self._geometry()
+        best, best_d = -1, self.HOVER_RADIUS
+        for i, pt in enumerate(pts):
+            d = math.hypot(pt.x() - pos.x(), pt.y() - pos.y())
+            if d <= best_d:
+                best, best_d = i, d
+        return best
+
+    def mouseMoveEvent(self, event):
+        idx = self._point_at(event.pos())
+        if idx != self._hover:
+            self._hover = idx
+            self.update()
+            self.setCursor(Qt.PointingHandCursor if idx >= 0 else Qt.ArrowCursor)
+        if idx >= 0:
+            QToolTip.showText(
+                event.globalPos(),
+                self.tooltip_format.format(label=self.labels[idx], value=self.values[idx]),
+                self,
+            )
+        else:
+            QToolTip.hideText()
+
+    def leaveEvent(self, event):
+        if self._hover != -1:
+            self._hover = -1
+            self.update()
+        super().leaveEvent(event)
+
     def paintEvent(self, event):
         if not self.values:
             return
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
 
-        y_max, y_step = self._axis()
-        left, right, top, bottom = 38, 10, 10, 26
-        plot = QRectF(left, top, self.width() - left - right,
-                      self.height() - top - bottom)
+        plot, pts, step, y_max, y_step, left = self._geometry()
 
         font = QFont()
         font.setPointSize(8)
         p.setFont(font)
 
-        # horizontal grid + y labels
         v = 0
         while v <= y_max + 1e-9:
             y = plot.bottom() - (v / y_max) * plot.height()
@@ -98,24 +145,18 @@ class LineChart(QWidget):
                        Qt.AlignRight | Qt.AlignVCenter, f"{v:g}")
             v += y_step
 
-        # points
-        n = len(self.values)
-        step = plot.width() / n
-        pts = [QPointF(plot.left() + step * (i + 0.5),
-                       plot.bottom() - (val / y_max) * plot.height())
-               for i, val in enumerate(self.values)]
+        every = max(1, math.ceil(self.MIN_LABEL_PX / step)) if step > 0 else 1
 
-        # vertical grid + x labels
         for i, pt in enumerate(pts):
             if self.show_vgrid:
                 p.setPen(QPen(self.grid_color, 1))
                 p.drawLine(QPointF(pt.x(), plot.top()),
                            QPointF(pt.x(), plot.bottom()))
-            p.setPen(self.text_color)
-            p.drawText(QRectF(pt.x() - 25, plot.bottom() + 6, 50, 16),
-                       Qt.AlignCenter, str(self.labels[i]))
+            if i % every == 0:
+                p.setPen(self.text_color)
+                p.drawText(QRectF(pt.x() - 25, plot.bottom() + 6, 50, 16),
+                           Qt.AlignCenter, str(self.labels[i]))
 
-        # gradient fill
         if self.fill:
             area = QPainterPath()
             area.moveTo(pts[0].x(), plot.bottom())
@@ -133,7 +174,6 @@ class LineChart(QWidget):
             p.setBrush(QBrush(grad))
             p.drawPath(area)
 
-        # line
         path = QPainterPath(pts[0])
         for pt in pts[1:]:
             path.lineTo(pt)
@@ -144,27 +184,33 @@ class LineChart(QWidget):
         p.setBrush(Qt.NoBrush)
         p.drawPath(path)
 
-        # dots
         p.setPen(Qt.NoPen)
         p.setBrush(self.line_color)
         for pt in pts:
             p.drawEllipse(pt, 3.5, 3.5)
 
+        if 0 <= self._hover < len(pts):
+            p.setPen(QPen(QColor("white"), 2))
+            p.setBrush(self.line_color)
+            p.drawEllipse(pts[self._hover], 6, 6)
+
 
 class GrowthCard(QFrame):
 
     def __init__(self, title="Growth", labels=None, values=None,
-                 badge_text=None, line_color="#2f5bff", parent=None):
+                 badge_text=None, line_color="#2f5bff",
+                 tooltip_format="{label}: {value:g}", parent=None):
         super().__init__(parent)
         self.setObjectName("growthCard")
         self._title = QLabel(title)
         self._title.setObjectName("growthTitle")
         self._badge = QLabel()
         self._badge.setObjectName("growthBadge")
-        self.chart = LineChart(line_color=line_color)
+        self.chart = LineChart(line_color=line_color, tooltip_format=tooltip_format)
 
         header_container = QWidget()
         header = QHBoxLayout(header_container)
+        header.setContentsMargins(0, 0, 0, 0)
         header.addWidget(self._title)
         header.addStretch()
         header.addWidget(self._badge)
@@ -173,19 +219,17 @@ class GrowthCard(QFrame):
         layout.setContentsMargins(18, 16, 18, 14)
         layout.setSpacing(10)
         layout.addWidget(header_container, alignment=Qt.AlignTop)
-        layout.addWidget(self.chart)
+        layout.addWidget(self.chart, 1)
 
         self._apply_badge_style(positive=True)
         self._badge.hide()
         if labels is not None and values is not None:
             self.set_data(labels, values, badge_text)
 
-    # ---------- public API ----------
     def set_title(self, text):
         self._title.setText(text)
 
     def set_data(self, labels, values, badge_text=None):
-        """Update the chart. If badge_text is None, shows % change first->last."""
         self.chart.set_data(labels, values)
         if badge_text is None:
             badge_text = self._auto_badge(values)
@@ -199,7 +243,6 @@ class GrowthCard(QFrame):
         self._apply_badge_style(positive)
         self._badge.show()
 
-    # ---------- internals ----------
     @staticmethod
     def _auto_badge(values):
         if len(values) < 2 or values[0] == 0:
@@ -217,11 +260,12 @@ class GrowthCard(QFrame):
                 border-radius: 16px;
             }}
             #growthTitle {{
-                color: #0f1b4c; font-size: 15px; font-weight: bold;
+                color: #0f1b4c; font-size: 16px; font-weight: 600;
+                background: transparent; border: none;
             }}
             #growthBadge {{
                 background: {bg}; color: {fg};
                 border-radius: 11px; padding: 3px 10px;
-                font-size: 11px; font-weight: bold;
+                font-size: 11px; font-weight: bold; border: none;
             }}
         """)

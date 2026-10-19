@@ -38,6 +38,7 @@
     <Compile Include="components\context_menu.py" />
     <Compile Include="components\description.py" />
     <Compile Include="components\divider.py" />
+    <Compile Include="components\donut_card.py" />
     <Compile Include="components\employee_activity.py" />
     <Compile Include="components\file_upload.py" />
     <Compile Include="components\footer_btn.py" />
