@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 
+from widgets.onboarding_dashboard import Onboarding
+
 class OnboardingWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -12,6 +14,6 @@ class OnboardingWindow(QWidget):
     def initUI(self):
         layout = QHBoxLayout(self)
 
-        widget = QLabel("Onboarding")
+        widget = Onboarding()
 
         layout.addWidget(widget)

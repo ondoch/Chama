@@ -167,7 +167,6 @@ class Dashboard(QFrame):
         rc_layout.addWidget(recent_chama)
         rc_layout.addWidget(self.recent_chamas_table, 1)
 
-        # the donut is its own card (own title, own border)
         self.card_chart = DonutChartCard(
             title="Chama Onboarding",
             center_caption="Chamas\nin Progress",
@@ -199,7 +198,6 @@ class Dashboard(QFrame):
         scroll_content = QWidget()
         scroll_content.setObjectName("scroll_content")
         scroll_layout = QVBoxLayout(scroll_content)
-        #scroll_layout.setContentsMargins(0, 0, 6, 0)
         scroll_layout.setSpacing(16)
         scroll_layout.addLayout(self.row_top, 1)
         scroll_layout.addLayout(self.row_bottom, 1)
@@ -238,24 +236,20 @@ class Dashboard(QFrame):
         self._set_stacked(self.row_top, stacked)
         self._set_stacked(self.row_bottom, stacked)
 
-    # ---------------------------------------------------------------- data
     def load_growth(self, labels, values):
         self.card.set_data(labels, values)
 
     def load_onboarding(self, data):
-        """data: [(label, value, '#hex'), ...]"""
         self.card_chart.set_data(data)
 
     def add_activity(self, name, activity, time_text, avatar_path=None):
         kwargs = {"avatar_path": avatar_path} if avatar_path else {}
         row = EmployeeActivity(name, activity, time_text, **kwargs)
-        # insert BEFORE the trailing stretch so rows stay packed at the top
         self.recent_activities_layout.insertWidget(
             self.recent_activities_layout.count() - 1, row
         )
 
     def clear_activities(self):
-        # keep the last item (the stretch)
         while self.recent_activities_layout.count() > 1:
             item = self.recent_activities_layout.takeAt(0)
             if item.widget():
@@ -271,7 +265,6 @@ class Dashboard(QFrame):
         for name, activity, when in samples:
             self.add_activity(name, activity, when)
 
-    # --------------------------------------------------------------- style
     def setStylesheet(self):
         self.setStyleSheet(f"""
             QWidget#container_widget{{

@@ -94,6 +94,7 @@
     <Compile Include="widgets\chama_widget.py" />
     <Compile Include="widgets\employee_dashboard.py" />
     <Compile Include="widgets\employee_widget.py" />
+    <Compile Include="widgets\onboarding_dashboard.py" />
     <Compile Include="widgets\overall_dashboard.py" />
     <Compile Include="widgets\widget_12.py" />
     <Compile Include="widgets\widget_1.py" />

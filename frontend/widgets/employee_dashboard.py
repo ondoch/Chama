@@ -209,7 +209,6 @@ class EmployeeDashboard(QFrame):
         if dialog.exec() == QDialog.Accepted:
             self.loadEmployeesFromBackend()
 
-    # ── View employee (read-only dialog) ───────────────────────────────────
     def openViewEmployee(self, row):
         employee_id = row.get("id")
         if employee_id is None:
