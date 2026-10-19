@@ -15,7 +15,6 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-# (label, value, color)
 Item = Tuple[str, float, str]
 
 DEFAULT_DATA = [
@@ -28,16 +27,13 @@ DEFAULT_DATA = [
 
 
 class DonutChart(QWidget):
-    """Donut ring. Scales with the space it is given and highlights the
-    segment under the mouse (the centre then shows that segment's value)."""
-
     def __init__(self, data: Sequence[Item] = (), center_caption: str = "",
-                 center_value=None, thickness: float = 0.22, parent=None):
+                 center_value=None, thickness: float = 0.14, parent=None):
         super().__init__(parent)
         self._data = list(data)
         self._caption = center_caption
-        self._center_value = center_value      # None -> use the sum of values
-        self._thickness = thickness            # ring width as a fraction of diameter
+        self._center_value = center_value
+        self._thickness = thickness
         self._value_color = QColor("#1B2559")
         self._caption_color = QColor("#6B7280")
         self._hover = -1
@@ -45,7 +41,6 @@ class DonutChart(QWidget):
         self.setMinimumSize(120, 120)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-    # ---- public API -------------------------------------------------
     def set_data(self, data: Iterable[Item]):
         self._data = list(data)
         self._hover = -1
@@ -63,11 +58,10 @@ class DonutChart(QWidget):
     def sizeHint(self):
         return QSize(180, 180)
 
-    # ---- geometry / hit testing --------------------------------------
     def _geometry(self):
         side = min(self.width(), self.height())
         ring = side * self._thickness
-        margin = ring / 2 + 4                  # spare room for the hover grow
+        margin = ring / 2 + 4
         rect = QRectF((self.width() - side) / 2 + margin,
                       (self.height() - side) / 2 + margin,
                       side - 2 * margin, side - 2 * margin)
@@ -83,7 +77,7 @@ class DonutChart(QWidget):
         radius = rect.width() / 2
         if not (radius - ring / 2 <= math.hypot(dx, dy) <= radius + ring / 2):
             return -1
-        angle = math.degrees(math.atan2(dx, -dy)) % 360    # clockwise from 12 o'clock
+        angle = math.degrees(math.atan2(dx, -dy)) % 360
         acc = 0.0
         for i, (_, value, _) in enumerate(self._data):
             if value <= 0:

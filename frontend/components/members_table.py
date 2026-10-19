@@ -43,7 +43,7 @@ def build_columns(on_view=None):
     return [
         {"header": "Employee", "key": "name", "factory": make_avatar_cell},
         {"header": "Role", "key": "role"},
-        {"header": "Chamas Managed", "key": "chamas_managed"},
+        {"header": "Chamas Managed", "key": "chamas_managed", "center":True},
         {"header": "Status", "key": "status", "factory": make_status_cell},
         {"header": "Actions", "key": None, "width": 110,
          "factory": actions_factory([

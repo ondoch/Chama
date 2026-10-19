@@ -40,6 +40,7 @@
     <Compile Include="components\divider.py" />
     <Compile Include="components\donut_card.py" />
     <Compile Include="components\employee_activity.py" />
+    <Compile Include="components\facilitator_cell.py" />
     <Compile Include="components\file_upload.py" />
     <Compile Include="components\footer_btn.py" />
     <Compile Include="components\form_dropdown.py" />
@@ -53,7 +54,9 @@
     <Compile Include="components\members_table.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\menu_btn.py" />
+    <Compile Include="components\onboarding_table.py" />
     <Compile Include="components\password_form_input.py" />
+    <Compile Include="components\progress_cell.py" />
     <Compile Include="components\progress_tracker.py" />
     <Compile Include="components\top_bar.py" />
     <Compile Include="components\officials_input.py" />

@@ -39,7 +39,7 @@ class Dashboard(QFrame):
 
         self.load_growth(
             ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            [18, 26, 34, 27, 49, 65, 75, 60, 0, 0, 13, 0],
+            [18, 26, 34, 27, 49, 65, 75, 60, 0, 0, 1, 0],
         )
         self.load_sample_activities()
 
