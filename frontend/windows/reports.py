@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QHBoxLayout
 )
+from widgets.reports_dashboard import ReportsDashboard
 
 class ReportsWindow(QWidget):
     def __init__(self):
@@ -12,6 +13,6 @@ class ReportsWindow(QWidget):
     def initUI(self):
         layout = QHBoxLayout(self)
 
-        widget = QLabel("Reports")
+        widget = ReportsDashboard()
 
         layout.addWidget(widget)

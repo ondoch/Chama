@@ -139,7 +139,6 @@ class Onboarding(QFrame):
         content.addLayout(self.banner_grid)
 
         self.search = SearchInput("Search...")
-        self.search.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         self.facilitators_dropdown = FormDropdown(
             "All",
@@ -181,7 +180,7 @@ class Onboarding(QFrame):
         left_col = QVBoxLayout()
         left_col.setContentsMargins(0, 0, 0, 0)
         left_col.setSpacing(12)
-        left_col.addWidget(self.search)
+        left_col.addWidget(self.search, alignment=Qt.AlignLeft)
         left_col.addLayout(self.filter_grid)
         left_col.addWidget(self.onboarding_chamas_table, 1)
 
@@ -248,7 +247,7 @@ class Onboarding(QFrame):
         scroll_content = QWidget()
         scroll_content.setObjectName("scroll_content")
         scroll_layout = QVBoxLayout(scroll_content)
-        scroll_layout.setContentsMargins(0, 0, 6, 0)     # room for the scrollbar
+        scroll_layout.setContentsMargins(0, 0, 6, 0)
         scroll_layout.addLayout(self.body)
         scroll.setWidget(scroll_content)
 
