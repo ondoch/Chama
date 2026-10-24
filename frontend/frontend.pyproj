@@ -78,6 +78,7 @@
     <Compile Include="modals\employee_information.py" />
     <Compile Include="modals\members_information.py" />
     <Compile Include="modals\member_summary.py" />
+    <Compile Include="modals\reports_information.py" />
     <Compile Include="modals\__init__.py" />
     <Compile Include="tabs\chama\employment_info.py" />
     <Compile Include="tabs\chama\next_of_kin.py" />
@@ -100,6 +101,7 @@
     <Compile Include="widgets\employee_widget.py" />
     <Compile Include="widgets\onboarding_dashboard.py" />
     <Compile Include="widgets\overall_dashboard.py" />
+    <Compile Include="widgets\overview.py" />
     <Compile Include="widgets\reports_dashboard.py" />
     <Compile Include="widgets\widget_12.py" />
     <Compile Include="widgets\widget_1.py" />
