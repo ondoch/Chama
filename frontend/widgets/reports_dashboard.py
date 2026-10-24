@@ -15,6 +15,7 @@ from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
 from components.pagination import Pagination
 from components.reports_table import ReportsTable
+from components.status_badge import StatusBadge
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
     COLOR_TEXT_MUTED,
@@ -22,6 +23,7 @@ from components.style_constants import (
     COLOR_BORDER,
 )
 
+from modals.reports_information import ReportModal
 
 class ReportsDashboard(QFrame):
     def __init__(self):
@@ -136,7 +138,7 @@ class ReportsDashboard(QFrame):
         search_widget_layout.addWidget(self.status_dropdown)
         search_widget_layout.addWidget(self.cycle_dropdown)
 
-        self.table = ReportsTable()
+        self.table = ReportsTable(on_view = self.openReportModal)
 
         container_widget_layout.addWidget(top_row_widget)
         container_widget_layout.addLayout(banner_layout)
@@ -145,6 +147,11 @@ class ReportsDashboard(QFrame):
 
         footer = Pagination()
         container_widget_layout.addWidget(footer, alignment=Qt.AlignBottom)
+
+    def openReportModal(self, row_data):
+        modal = ReportModal(row_data=row_data, parent=self)
+        modal.setWindowTitle("Chama Report")
+        modal.exec_()
 
     def setStylesheet(self):
         self.setStyleSheet(f"""
