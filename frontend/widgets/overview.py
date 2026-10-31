@@ -19,7 +19,6 @@ from components.recent_loans_table import RecentLoansTable
 
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
-    COLOR_TEXT_MUTED,
     FONT_FAMILY,
     COLOR_BORDER,
 )

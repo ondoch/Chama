@@ -73,7 +73,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # Allow custom headers (such as Authorization for SimpleJWT)
 CORS_ALLOW_HEADERS = [
-    "accept",
+    "accept", 
     "authorization",
     "content-type",
     "user-agent",

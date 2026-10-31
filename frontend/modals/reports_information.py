@@ -20,9 +20,9 @@ from components.style_constants import (
 )
 
 from widgets.overview import Overview
+from widgets.members import Members
 # from widgets.contributions import Contributions
 # from widgets.loans import Loans
-# from widgets.members import Members
 # from widgets.cycle import Cycle
 # from widgets.transactions import Transactions
 
@@ -146,11 +146,12 @@ class ReportModal(QDialog):
         self.tabs.tabBar().setCursor(Qt.PointingHandCursor)
 
         self.overview = Overview()
+        self.members = Members()
         pages = [
             ("Overview", self.overview),
+            ("Members", self.members),
             ("Contributions", PlaceholderPage("Contributions")),
             ("Loans", PlaceholderPage("Loans")),
-            ("Members", PlaceholderPage("Members")),
             ("Cycle", PlaceholderPage("Cycle")),
             ("Transactions", PlaceholderPage("Transactions")),
         ]

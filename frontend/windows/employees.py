@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout
 )
-from widgets.employee_widget import AddEmployee
 from widgets.employee_dashboard import EmployeeDashboard
 
 class EmployeeWindow(QWidget):
