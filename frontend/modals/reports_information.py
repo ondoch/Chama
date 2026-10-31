@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import (
+    QApplication,
     QDialog,
     QFrame,
     QWidget,
@@ -21,12 +22,13 @@ from components.style_constants import (
 
 from widgets.overview import Overview
 from widgets.members import Members
+from widgets.cycle import Cycle
+from widgets.loans import Loans
 # from widgets.contributions import Contributions
-# from widgets.loans import Loans
-# from widgets.cycle import Cycle
 # from widgets.transactions import Transactions
 
 COLOR_ACCENT = "#0F9D6B"
+
 
 class PlaceholderPage(QWidget):
 
@@ -42,15 +44,59 @@ class PlaceholderPage(QWidget):
 
 
 class ReportModal(QDialog):
+    WIDTH_RATIO = 0.85
+    HEIGHT_RATIO = 0.85
+
     def __init__(self, row_data=None, parent=None):
         super().__init__(parent)
         self.setModal(True)
+        self._positioned = False
 
         self.initUi()
         self.setStylesheet()
 
         if row_data:
             self.set_data(row_data)
+
+    def _screen_geometry(self):
+        screen = None
+        if self.parent() is not None:
+            center = self.parent().window().frameGeometry().center()
+            screen = QApplication.screenAt(center)
+        if screen is None:
+            screen = QApplication.primaryScreen()
+        return screen.availableGeometry()
+
+    def apply_relative_size(self):
+        avail = self._screen_geometry()
+
+        self.setMaximumSize(avail.width(), avail.height())
+
+        w = int(avail.width() * self.WIDTH_RATIO)
+        h = int(avail.height() * self.HEIGHT_RATIO)
+        self.resize(w, h)
+
+    def center_dialog(self):
+        avail = self._screen_geometry()
+
+        if self.parent() is not None:
+            center = self.parent().window().frameGeometry().center()
+        else:
+            center = avail.center()
+
+        geo = self.frameGeometry()
+        geo.moveCenter(center)
+
+        x = max(avail.left(), min(geo.left(), avail.right() - geo.width() + 1))
+        y = max(avail.top(), min(geo.top(), avail.bottom() - geo.height() + 1))
+        self.move(x, y)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        if not self._positioned:
+            self._positioned = True
+            self.apply_relative_size()
+            self.center_dialog()
 
     def initUi(self):
         main_layout = QHBoxLayout(self)
@@ -141,18 +187,23 @@ class ReportModal(QDialog):
         self.tabs = QTabWidget()
         self.tabs.setObjectName("report_tabs")
         self.tabs.setDocumentMode(True)
-        self.tabs.tabBar().setExpanding(False)
-        self.tabs.tabBar().setDrawBase(False)
-        self.tabs.tabBar().setCursor(Qt.PointingHandCursor)
+
+        tab_bar = self.tabs.tabBar()
+        tab_bar.setExpanding(False)
+        tab_bar.setDrawBase(False)
+        tab_bar.setCursor(Qt.PointingHandCursor)
+        tab_bar.setElideMode(Qt.ElideNone)
+        tab_bar.setUsesScrollButtons(False)
 
         self.overview = Overview()
         self.members = Members()
+        self.cycle = Cycle()
+        self.loans = Loans()
         pages = [
             ("Overview", self.overview),
             ("Members", self.members),
-            ("Contributions", PlaceholderPage("Contributions")),
-            ("Loans", PlaceholderPage("Loans")),
-            ("Cycle", PlaceholderPage("Cycle")),
+            ("Cycle", self.cycle),
+            ("Loans", self.loans),
             ("Transactions", PlaceholderPage("Transactions")),
         ]
 
@@ -191,7 +242,6 @@ class ReportModal(QDialog):
                 background-color: {COLOR_BORDER};
                 border: none;
             }}
-
             QTabWidget#report_tabs::pane{{
                 border: none;
                 border-top: 1px solid {COLOR_BORDER};
@@ -203,19 +253,20 @@ class ReportModal(QDialog):
             QTabWidget#report_tabs QTabBar::tab{{
                 font-family: {FONT_FAMILY};
                 font-size: 14px;
+                font-weight: 600;
                 color: {COLOR_TEXT_MUTED};
                 background: transparent;
                 border: none;
                 border-bottom: 2px solid transparent;
-                padding: 10px 18px;
+                padding: 10px 20px;
                 margin-right: 6px;
+                min-width: 80px;
             }}
             QTabWidget#report_tabs QTabBar::tab:hover{{
                 color: {COLOR_TEXT_PRIMARY};
             }}
             QTabWidget#report_tabs QTabBar::tab:selected{{
                 color: {COLOR_SIDEBAR_BG};
-                font-weight: 600;
                 border-bottom: 2px solid {COLOR_SIDEBAR_BG};
             }}
         """)

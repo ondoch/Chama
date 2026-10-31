@@ -15,7 +15,6 @@ from components.search_input import SearchInput
 from components.form_dropdown import FormDropdown
 from components.pagination import Pagination
 from components.reports_table import ReportsTable
-from components.status_badge import StatusBadge
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
     COLOR_TEXT_MUTED,

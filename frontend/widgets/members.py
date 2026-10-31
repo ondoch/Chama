@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
     QHBoxLayout,
-    QVBoxLayout
+    QVBoxLayout,
+    QSizePolicy
 )
 from PyQt5.QtCore import Qt
 
@@ -14,9 +15,9 @@ from components.member_summary import MemberSummary
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
     FONT_FAMILY,
-    COLOR_BORDER,
     COLOR_TEXT_MUTED
 )
+
 
 class Members(QFrame):
     def __init__(self):
@@ -47,17 +48,18 @@ class Members(QFrame):
         table_layout = QVBoxLayout()
 
         table = ReportsMembersTable()
+        table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         footer = Pagination()
         table_layout.addWidget(table)
         table_layout.addWidget(footer, alignment=Qt.AlignBottom)
 
         summary = MemberSummary()
 
-        container_1_layout.addLayout(table_layout)
-        container_1_layout.addWidget(summary)
-
-        container_1_layout.setContentsMargins(1,5,5,5)
+        container_1_layout.setContentsMargins(1, 5, 5, 5)
         container_1_layout.setSpacing(10)
+
+        container_1_layout.addLayout(table_layout, stretch=3)
+        container_1_layout.addWidget(summary, stretch=2)
 
         container_layout.addLayout(header_layout)
         container_layout.addWidget(container_1)

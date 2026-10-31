@@ -6,11 +6,13 @@ from PyQt5.QtWidgets import (
     QLabel,
     QHBoxLayout,
     QVBoxLayout,
+    QSizePolicy,
 )
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 
 from components.avatar import Avatar
+from components.status_badge import StatusBadge
 from components.style_constants import (
     COLOR_TEXT_PRIMARY,
     FONT_FAMILY,
@@ -19,14 +21,13 @@ from components.style_constants import (
 )
 
 COLOR_SURFACE_SOFT = "#F9FAFB"
-COLOR_SUCCESS_BG = "#ECFDF3"
-COLOR_SUCCESS_TEXT = "#027A48"
-COLOR_WARNING_BG = "#FFFAEB"
 COLOR_WARNING_TEXT = "#B54708"
+
 
 class MemberSummary(QFrame):
     def __init__(self):
         super().__init__()
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         self.initUi()
         self.setStylesheet()
 
@@ -36,7 +37,8 @@ class MemberSummary(QFrame):
 
         container = QFrame()
         container.setObjectName("container")
-        container.setMinimumWidth(420)
+        container.setMinimumWidth(400)
+        container.setMaximumWidth(520)
 
         shadow = QGraphicsDropShadowEffect(container)
         shadow.setBlurRadius(24)
@@ -45,8 +47,8 @@ class MemberSummary(QFrame):
         container.setGraphicsEffect(shadow)
 
         container_layout = QVBoxLayout(container)
-        container_layout.setContentsMargins(24, 24, 24, 24)
-        container_layout.setSpacing(18)
+        container_layout.setContentsMargins(24, 22, 24, 22)
+        container_layout.setSpacing(14)
 
         header = QWidget()
         header_layout = QHBoxLayout(header)
@@ -70,9 +72,7 @@ class MemberSummary(QFrame):
         name_widget_layout.addWidget(self.name)
         name_widget_layout.addWidget(self.description)
 
-        self.status_badge = QLabel("Active")
-        self.status_badge.setObjectName("badge")
-        self.status_badge.setAlignment(Qt.AlignCenter)
+        self.status_badge = StatusBadge("Active")
 
         header_layout.addWidget(name_widget)
         header_layout.addStretch()
@@ -104,7 +104,7 @@ class MemberSummary(QFrame):
         container_layout.addWidget(self._make_section_title("Contribution Summary"))
 
         stats_layout = QHBoxLayout()
-        stats_layout.setSpacing(12)
+        stats_layout.setSpacing(8)
 
         tile_1, self.total_contribution = self._make_stat_tile(
             "Total Contributions", "KES 48,000", "statValue"
@@ -137,22 +137,24 @@ class MemberSummary(QFrame):
     def _make_value(self, text):
         label = QLabel(text)
         label.setObjectName("value")
+        label.setWordWrap(True)
         label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         return label
 
     def _make_detail_grid(self, rows):
         grid = QGridLayout()
         grid.setContentsMargins(0, 0, 0, 0)
-        grid.setHorizontalSpacing(24)
-        grid.setVerticalSpacing(12)
-        grid.setColumnMinimumWidth(0, 130)
+        grid.setHorizontalSpacing(16)
+        grid.setVerticalSpacing(10)
+        grid.setColumnMinimumWidth(0, 115)
+        grid.setColumnStretch(0, 0)
         grid.setColumnStretch(1, 1)
 
         for row, (key_text, value_label) in enumerate(rows):
             key = QLabel(key_text)
             key.setObjectName("key")
-            grid.addWidget(key, row, 0)
-            grid.addWidget(value_label, row, 1)
+            grid.addWidget(key, row, 0, Qt.AlignTop)
+            grid.addWidget(value_label, row, 1, Qt.AlignTop)
         return grid
 
     def _make_stat_tile(self, title, value, value_object_name):
@@ -160,7 +162,7 @@ class MemberSummary(QFrame):
         tile.setObjectName("statTile")
 
         layout = QVBoxLayout(tile)
-        layout.setContentsMargins(14, 12, 14, 12)
+        layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(4)
 
         title_label = QLabel(title)
@@ -210,15 +212,6 @@ class MemberSummary(QFrame):
                 font-size: 12px;
             }}
 
-            QLabel#badge {{
-                background-color: {COLOR_SUCCESS_BG};
-                color: {COLOR_SUCCESS_TEXT};
-                font-size: 12px;
-                font-weight: 600;
-                padding: 4px 12px;
-                border-radius: 11px;
-            }}
-
             QLabel#sectionTitle {{
                 color: {COLOR_TEXT_PRIMARY};
                 font-size: 14px;
@@ -250,12 +243,12 @@ class MemberSummary(QFrame):
             }}
             QLabel#statValue {{
                 color: {COLOR_TEXT_PRIMARY};
-                font-size: 15px;
+                font-size: 14px;
                 font-weight: 700;
             }}
             QLabel#statValueWarn {{
                 color: {COLOR_WARNING_TEXT};
-                font-size: 15px;
+                font-size: 14px;
                 font-weight: 700;
             }}
         """)

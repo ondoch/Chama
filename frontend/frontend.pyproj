@@ -65,6 +65,7 @@
     <Compile Include="components\reports_members.py" />
     <Compile Include="components\reports_table.py" />
     <Compile Include="components\summary_card.py" />
+    <Compile Include="components\timetable.py" />
     <Compile Include="components\top_bar.py" />
     <Compile Include="components\officials_input.py" />
     <Compile Include="components\pagination.py" />
@@ -103,8 +104,10 @@
     <Compile Include="widgets\audit_log_dashboard.py" />
     <Compile Include="widgets\chama_dashboard.py" />
     <Compile Include="widgets\chama_widget.py" />
+    <Compile Include="widgets\cycle.py" />
     <Compile Include="widgets\employee_dashboard.py" />
     <Compile Include="widgets\employee_widget.py" />
+    <Compile Include="widgets\loans.py" />
     <Compile Include="widgets\members.py" />
     <Compile Include="widgets\onboarding_dashboard.py" />
     <Compile Include="widgets\overall_dashboard.py" />

@@ -101,6 +101,7 @@ class Dashboard(QFrame):
         self.banner_today = Banner4(
             "resources/portfolio.svg", "0", "Portfolio"
         )
+
         self._banners = [
             self.banner_total_actions,
             self.banner_employees,
