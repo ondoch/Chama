@@ -25,6 +25,8 @@
     <Compile Include="api\payload_mapper.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="components\action_buttons.py" />
+    <Compile Include="components\active_loans.py" />
+    <Compile Include="components\all_loans_table.py" />
     <Compile Include="components\audit_log_table.py" />
     <Compile Include="components\avatar.py" />
     <Compile Include="components\banner.py" />
@@ -52,6 +54,7 @@
     <Compile Include="components\header.py" />
     <Compile Include="components\icon_text.py" />
     <Compile Include="components\information.py" />
+    <Compile Include="components\loans_table.py" />
     <Compile Include="components\members_table.py" />
     <Compile Include="components\member_form_input.py" />
     <Compile Include="components\member_summary.py" />
@@ -62,6 +65,7 @@
     <Compile Include="components\progress_tracker.py" />
     <Compile Include="components\recent_contribution_table.py" />
     <Compile Include="components\recent_loans_table.py" />
+    <Compile Include="components\repaid_loans_table.py" />
     <Compile Include="components\reports_members.py" />
     <Compile Include="components\reports_table.py" />
     <Compile Include="components\summary_card.py" />
@@ -101,6 +105,8 @@
     <Compile Include="tabs\employee\tab_3.py" />
     <Compile Include="tabs\employee\__init__.py" />
     <Compile Include="tabs\__init__.py" />
+    <Compile Include="widgets\active_loans.py" />
+    <Compile Include="widgets\all_loans.py" />
     <Compile Include="widgets\audit_log_dashboard.py" />
     <Compile Include="widgets\chama_dashboard.py" />
     <Compile Include="widgets\chama_widget.py" />
@@ -112,6 +118,8 @@
     <Compile Include="widgets\onboarding_dashboard.py" />
     <Compile Include="widgets\overall_dashboard.py" />
     <Compile Include="widgets\overview.py" />
+    <Compile Include="widgets\pending_approval.py" />
+    <Compile Include="widgets\repaid_loans.py" />
     <Compile Include="widgets\reports_dashboard.py" />
     <Compile Include="widgets\widget_12.py" />
     <Compile Include="widgets\widget_1.py" />
@@ -127,7 +135,6 @@
     <Compile Include="widgets\widget_8.py" />
     <Compile Include="widgets\widget_9.py" />
     <Compile Include="widgets\__init__.py" />
-    <Compile Include="windows\assignments.py" />
     <Compile Include="windows\audit_logs.py" />
     <Compile Include="windows\chamas.py" />
     <Compile Include="windows\dashboard.py" />

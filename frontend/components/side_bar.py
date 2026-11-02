@@ -1,7 +1,12 @@
 from typing import List, Tuple, Optional
 
 from PyQt5.QtWidgets import (
-    QFrame, QVBoxLayout, QHBoxLayout, QButtonGroup, QLabel, QWidget
+    QFrame,
+    QVBoxLayout,
+    QHBoxLayout,
+    QButtonGroup,
+    QLabel,
+    QWidget
 )
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -26,7 +31,6 @@ class Sidebar(QFrame):
         ]),
         ("Operations", [
             ("Onboarding", "resources/onboarding.svg"),
-            ("Assignments", "resources/assignments.svg"),
             ("Reports", "resources/reports.svg"),
         ]),
         ("Security", [

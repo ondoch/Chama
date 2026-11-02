@@ -8,6 +8,10 @@ STATUS_COLORS = {
     "active": ("#c9f7d9", "#1a7f4e"),
     "onboarding": ("#fbe0c4", "#b35900"),
     "inactive": ("#f0f0f0", "#666666"),
+    "pending": ("#fff4e5", "#b35900"),
+    "cleared": ("#e0f7fa", "#006064"),
+    "in Progress": ("#fff4e5", "#b35900"),
+    "rejected": ("#f8d7da", "#721c24"),
 }
 
 class StatusBadge(QWidget):
