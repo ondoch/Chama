@@ -81,6 +81,7 @@
     <Compile Include="components\style_constants.py" />
     <Compile Include="components\custom_table.py" />
     <Compile Include="components\toggle_button.py" />
+    <Compile Include="components\transactions_table.py" />
     <Compile Include="components\upload_widget.py" />
     <Compile Include="components\__init__.py" />
     <Compile Include="components\date_widget.py" />
@@ -121,6 +122,7 @@
     <Compile Include="widgets\pending_approval.py" />
     <Compile Include="widgets\repaid_loans.py" />
     <Compile Include="widgets\reports_dashboard.py" />
+    <Compile Include="widgets\transactions.py" />
     <Compile Include="widgets\widget_12.py" />
     <Compile Include="widgets\widget_1.py" />
     <Compile Include="widgets\widget_10.py" />

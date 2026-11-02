@@ -12,6 +12,12 @@ STATUS_COLORS = {
     "cleared": ("#e0f7fa", "#006064"),
     "in Progress": ("#fff4e5", "#b35900"),
     "rejected": ("#f8d7da", "#721c24"),
+    "contribution": ("#e0f7fa", "#006064"),
+    "loan repayment": ("#fff4e5", "#b35900"),
+    "loan disbursement": ("#e0f7fa", "#006064"),
+    "cycle disbursement": ("#e0f7fa", "#006064"),
+    "share disbursement": ("#e0f7fa", "#006064"),
+    "other": ("#e0f7fa", "#006064"),
 }
 
 class StatusBadge(QWidget):

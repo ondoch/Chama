@@ -24,24 +24,9 @@ from widgets.overview import Overview
 from widgets.members import Members
 from widgets.cycle import Cycle
 from widgets.loans import Loans
-# from widgets.contributions import Contributions
-# from widgets.transactions import Transactions
+from widgets.transactions import Transactions
 
 COLOR_ACCENT = "#0F9D6B"
-
-
-class PlaceholderPage(QWidget):
-
-    def __init__(self, name):
-        super().__init__()
-        layout = QVBoxLayout(self)
-        label = QLabel(f"{name} page coming soon")
-        label.setAlignment(Qt.AlignCenter)
-        label.setStyleSheet(
-            f"font-family: {FONT_FAMILY}; color: {COLOR_TEXT_MUTED}; font-size: 14px;"
-        )
-        layout.addWidget(label)
-
 
 class ReportModal(QDialog):
     WIDTH_RATIO = 0.85
@@ -199,12 +184,13 @@ class ReportModal(QDialog):
         self.members = Members()
         self.cycle = Cycle()
         self.loans = Loans()
+        self.transactions = Transactions()
         pages = [
             ("Overview", self.overview),
             ("Members", self.members),
             ("Cycle", self.cycle),
             ("Loans", self.loans),
-            ("Transactions", PlaceholderPage("Transactions")),
+            ("Transactions", self.transactions),
         ]
 
         self.pages = {}
