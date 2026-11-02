@@ -117,8 +117,8 @@ class Onboarding(QFrame):
             "Waiting",
             "Pending information",
         )
-        self.banner_officials = Banner4(
-            "resources/leader_1.svg",
+        self.banner_warning = Banner4(
+            "resources/warning.svg",
             "0",
             "Needs attention",
             "Requires intervention",
@@ -127,7 +127,7 @@ class Onboarding(QFrame):
             self.banner_total_chamas,
             self.banner_members,
             self.banner_pending,
-            self.banner_officials,
+            self.banner_warning,
         ]
         for banner in self._banners:
             banner.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
