@@ -83,6 +83,11 @@ class EmployeeDashboard(QFrame):
         self.add_employee_button.setFixedHeight(38)
         self.add_employee_button.clicked.connect(self.openAddEmployee)
 
+        self.clear_btn = QPushButton("Clear Filters")
+        self.clear_btn.setObjectName("clear_filters_button")
+        self.clear_btn.setCursor(Qt.PointingHandCursor)
+        self.clear_btn.setFixedHeight(38)
+
         top_row_widget = QWidget()
         top_row_layout = QHBoxLayout(top_row_widget)
         top_row_layout.setContentsMargins(0, 0, 0, 0)
@@ -128,6 +133,7 @@ class EmployeeDashboard(QFrame):
             height=40,
             icon_path="resources/down_arrow.svg",
         )
+
         self.search.textChanged.connect(self.applyFilters)
 
         if hasattr(self.status_dropdown, "currentTextChanged"):
@@ -138,9 +144,11 @@ class EmployeeDashboard(QFrame):
             )
 
         search_widget_layout.addWidget(self.search, alignment=Qt.AlignLeft)
+        search_widget_layout.addStretch()
         search_widget_layout.addWidget(
             self.status_dropdown, alignment=Qt.AlignRight
         )
+        search_widget_layout.addWidget(self.clear_btn, alignment=Qt.AlignRight)
 
         container_widget_layout.addWidget(top_row_widget)
         container_widget_layout.addLayout(banner_layout)
@@ -299,6 +307,22 @@ class EmployeeDashboard(QFrame):
                 background: {COLOR_SIDEBAR_HOVER};
             }}
             QPushButton#add_chama_button:pressed{{
+                background: {COLOR_SIDEBAR_SELECT};
+            }}
+            QPushButton#clear_filters_button{{
+                font-family: {FONT_FAMILY};
+                background-color: {COLOR_SIDEBAR_BG};
+                color: #FFFFFF;
+                font-size: 14px;
+                font-weight: 600;
+                border: none;
+                border-radius: 6px;
+                padding: 0 16px;
+            }}
+            QPushButton#clear_filters_button:hover{{
+                background: {COLOR_SIDEBAR_HOVER};
+            }}
+            QPushButton#clear_filters_button:pressed{{
                 background: {COLOR_SIDEBAR_SELECT};
             }}
         """)

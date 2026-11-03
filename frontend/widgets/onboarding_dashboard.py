@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QScrollArea,
     QSizePolicy,
     QVBoxLayout,
@@ -31,7 +32,7 @@ CARD_MIN_HEIGHT = 280
 STACK_BODY_BELOW = 1000
 BANNERS_2COL_BELOW = 880
 SIDE_CARDS_ROW_FROM = 760
-FILTERS_1COL_BELOW = 640
+FILTERS_2COL_BELOW = 640
 
 SAMPLE_CHAMAS = [
     {"chama_name": "Tumaini Group",      "facilitator": "Mary Wanjiku", "progress": 80,
@@ -99,20 +100,20 @@ class Onboarding(QFrame):
         header_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         content.addWidget(header_widget)
 
-        self.banner_total_chamas = Banner4(
-            "resources/chamas.svg",
+        self.banner_in_progress = Banner4(
+            "resources/in_progress.svg",
             "0",
             "In progress",
             "Chamas being set up"
         )
-        self.banner_members = Banner4(
-            "resources/people.svg",
+        self.banner_almost_done = Banner4(
+            "resources/almost_done.svg",
             "0",
             "Almost done",
             "Ready for activation"
         )
         self.banner_pending = Banner4(
-            "resources/inactive_users.svg",
+            "resources/paused.svg",
             "0",
             "Waiting",
             "Pending information",
@@ -124,8 +125,8 @@ class Onboarding(QFrame):
             "Requires intervention",
         )
         self._banners = [
-            self.banner_total_chamas,
-            self.banner_members,
+            self.banner_in_progress,
+            self.banner_almost_done,
             self.banner_pending,
             self.banner_warning,
         ]
@@ -159,17 +160,24 @@ class Onboarding(QFrame):
             icon_path="resources/down_arrow.svg",
         )
 
+        self.clear_btn = QPushButton("Clear Filters")
+        self.clear_btn.setObjectName("clear_filters_button")
+        self.clear_btn.setCursor(Qt.PointingHandCursor)
+        self.clear_btn.setFixedSize(110, 40)
+        self.clear_btn.clicked.connect(self.clear_filters)
+
         self._filter_boxes = [
             self._make_filter("Facilitator", self.facilitators_dropdown),
             self._make_filter("Progress", self.progress_dropdown),
             self._make_filter("Status", self.status_dropdown),
+            self._make_clear_box(self.clear_btn),
         ]
         self.filter_grid = QGridLayout()
         self.filter_grid.setContentsMargins(0, 0, 0, 0)
         self.filter_grid.setHorizontalSpacing(12)
         self.filter_grid.setVerticalSpacing(8)
         self._filter_cols = 0
-        self._reflow_filters(3)
+        self._reflow_filters(4)
 
         self.onboarding_chamas_table = OnboardingTable()
         self.onboarding_chamas_table.setSizePolicy(
@@ -265,6 +273,15 @@ class Onboarding(QFrame):
         layout.addWidget(dropdown)
         return box
 
+    def _make_clear_box(self, button):
+        box = QWidget()
+        layout = QVBoxLayout(box)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addStretch()
+        layout.addWidget(button, alignment=Qt.AlignLeft)
+        return box
+
     @staticmethod
     def _fill_grid(grid, widgets, columns):
         while grid.count():
@@ -289,6 +306,8 @@ class Onboarding(QFrame):
         if columns != self._filter_cols:
             self._filter_cols = columns
             self._fill_grid(self.filter_grid, self._filter_boxes, columns)
+            if columns == 4:
+                self.filter_grid.setColumnStretch(3, 0)
 
     def _set_body_stacked(self, stacked):
         direction = QBoxLayout.TopToBottom if stacked else QBoxLayout.LeftToRight
@@ -307,9 +326,25 @@ class Onboarding(QFrame):
         width = event.size().width()
         stacked = width < STACK_BODY_BELOW
         self._reflow_banners(4 if width >= self._banners_need_width() else 2)
-        self._reflow_filters(3 if width >= FILTERS_1COL_BELOW else 1)
+        self._reflow_filters(4 if width >= FILTERS_2COL_BELOW else 2)
         self._set_body_stacked(stacked)
         self._set_right_side_by_side(stacked and width >= SIDE_CARDS_ROW_FROM)
+
+    def clear_filters(self):
+        for dropdown in (
+            self.facilitators_dropdown,
+            self.progress_dropdown,
+            self.status_dropdown,
+        ):
+            dropdown.blockSignals(True)
+            dropdown.setCurrentIndex(0)
+            dropdown.blockSignals(False)
+
+        self.search.blockSignals(True)
+        self.search.clear()
+        self.search.blockSignals(False)
+
+        self.load_sample_chamas()
 
     def load_chamas(self, rows):
         self.onboarding_chamas_table.populate(rows)
@@ -384,6 +419,21 @@ class Onboarding(QFrame):
                 font-family: {FONT_FAMILY};
                 color:{COLOR_TEXT_MUTED};
                 font-size: 13px;
+            }}
+            QPushButton#clear_filters_button{{
+                font-family: {FONT_FAMILY};
+                font-size: 12px;
+                color: {COLOR_TEXT_MUTED};
+                background-color: #FFFFFF;
+                border: 1px solid {COLOR_BORDER};
+                border-radius: 5px;
+            }}
+            QPushButton#clear_filters_button:hover{{
+                background-color: #F0F2F4;
+                color: {COLOR_TEXT_PRIMARY};
+            }}
+            QPushButton#clear_filters_button:pressed{{
+                background-color: #E4E7EA;
             }}
             QScrollBar:vertical{{
                 border: none;

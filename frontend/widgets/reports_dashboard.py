@@ -50,7 +50,7 @@ class ReportsDashboard(QFrame):
 
         icon = QLabel()
         icon.setFixedSize(50, 50)
-        pixmap = QPixmap("resources/group_1.svg")
+        pixmap = QPixmap("resources/final_report.svg")
         icon.setPixmap(
             pixmap.scaled(49, 49, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
@@ -78,31 +78,31 @@ class ReportsDashboard(QFrame):
         banner_layout.setContentsMargins(left, 10, right, bottom)
 
         self.banner_total_chamas = Banner4(
-            "resources/chamas.svg",
+            "resources/all_chamas.svg",
             "0",
             "Total Chamas",
             "0 Active"
         )
         self.banner_total_members = Banner4(
-            "resources/people.svg",
+            "resources/all_members.svg",
             "0",
             "Total Members",
             "Across all"
         )
         self.banner_total_contribution = Banner4(
-            "resources/inactive_users.svg",
+            "resources/total_contribs.svg",
             "0",
             "Total Contributions",
             "12% vs. the previous period",
         )
         self.banner_total_loans = Banner4(
-            "resources/inactive_users.svg",
+            "resources/loans_disbursed.svg",
             "0",
             "Total loans disbursed",
             "18% vs. the previous period",
         )
         self.banner_active_cycles = Banner4(
-            "resources/leader_1.svg",
+            "resources/cycle.svg",
             "0",
             "Active Cycles",
             "Current cycle: jan 2025-Dec 2025",

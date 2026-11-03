@@ -45,6 +45,12 @@ class SearchInput(QFrame):
         self.setLayout(main_layout)
         self.setFixedHeight(40)
 
+    def clear(self):
+        self.entry.clear()
+
+    def text(self):
+        return self.entry.text()
+
     def setStylesheet(self):
         self.setStyleSheet("""
             QFrame {
