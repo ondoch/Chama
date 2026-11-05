@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dashboard"
+        android:title="@string/dashboard"
+        android:icon="@drawable/dashboard"/>
+    <item
+        android:id="@+id/members"
+        android:title="@string/members"
+        android:icon="@drawable/members_ic"/>
+    <item
+        android:id="@+id/finance"
+        android:title="@string/finance"
+        android:icon="@drawable/finance_ic"/>
+    <item
+        android:id="@+id/loans"
+        android:title="@string/loans"
+        android:icon="@drawable/loans"/>
+    <item
+        android:id="@+id/profile"
+        android:title="@string/profile"
+        android:icon="@drawable/profile"/>
+</menu>

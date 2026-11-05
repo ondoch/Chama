@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="af946b7c-ef4e-4f0c-954e-b83807082861" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/components/search_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/components/search_input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/widgets/employee_dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/widgets/employee_dashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/widgets/onboarding_dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/widgets/onboarding_dashboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/widgets/reports_dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/widgets/reports_dashboard.py" afterDir="false" />
-    </list>
+    <list default="true" id="af946b7c-ef4e-4f0c-954e-b83807082861" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

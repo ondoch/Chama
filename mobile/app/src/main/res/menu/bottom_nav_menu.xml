@@ -16,4 +16,8 @@
         android:id="@+id/nav_loans"
         android:title="@string/loans"
         android:icon="@drawable/loan_ic"/>
+    <item
+        android:id="@+id/nav_profile"
+        android:title="@string/profile"
+        android:icon="@drawable/profile"/>
 </menu>

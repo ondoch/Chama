@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">CH-Admin</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="members">Members</string>
+    <string name="finance">Finance</string>
+    <string name="loans">Loans</string>
+    <string name="profile">Profile</string>
+    <string name="group_name">Vijana Youth Group</string>
+    <string name="position">Group Chairman</string>
+    <string name="group_balance">Group Balance</string>
+    <string name="group_balance_int">KES 185,000</string>
+    <string name="vs">vs last month</string>
+    <string name="percentage_shift">12%</string>
+    <string name="overview">This Month Overview</string>
+    <string name="contributions">Contributions</string>
+    <string name="contributions_int">KES 32,000</string>
+    <string name="loans_issued">Loans issued</string>
+    <string name="loans_issued_int">KES 15,000</string>
+    <string name="shares_member">Shares per member</string>
+    <string name="shares_int">KES 500</string>
+    <string name="pool">Pool</string>
+    <string name="pool_int">KES 4,500</string>
+</resources>

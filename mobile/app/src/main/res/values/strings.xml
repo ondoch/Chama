@@ -31,6 +31,7 @@
     <string name="contributions">Contributions</string>
     <string name="loans">Loans</string>
     <string name="members">Members</string>
+    <string name="profile">Profile</string>
     <string name="contribution_overview">Contribution Overview</string>
     <string name="target">Target</string>
     <string name="target_amount">KSh 50,000</string>
